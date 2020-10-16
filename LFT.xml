@@ -1,0 +1,563 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+    <Script file="LFT.lua"/>
+
+    <CheckButton name="LFT_DungeonCheck" virtual="true">
+        <Size>
+            <AbsDimension x="20" y="20"/>
+        </Size>
+        <Layers>
+            <Layer level="OVERLAY">
+                <FontString name="$parentText" inherits="GameFontNormal" text="dungeontext">
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="20" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentLevels" inherits="GameFontNormal" text="dungeontext">
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="230" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnClick>
+                    queueFor(this:GetName(), this:GetChecked())
+            </OnClick>
+        </Scripts>
+        <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+        <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+        <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+        <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+        <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+    </CheckButton>
+
+    <Frame name="LFTGroupReady" hidden="true" toplevel="true"
+           parent="UIParent" enableMouse="true">
+        <Size>
+            <AbsDimension x="308" y="200"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOP">
+                <Offset>
+                    <AbsDimension x="0" y="-150"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+                  edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+                  tile="false">
+            <BackgroundInsets>
+                <AbsInset left="11" right="12" top="12" bottom="11"/>
+            </BackgroundInsets>
+            <TileSize>
+                <AbsValue val="32"/>
+            </TileSize>
+            <EdgeSize>
+                <AbsValue val="32"/>
+            </EdgeSize>
+
+        </Backdrop>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="%parentBackground"
+                         file="Interface\addons\LFT\images\background\ui-lfg-background-scholomance">
+                    <Size>
+                        <AbsDimension x="288" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-8"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture name="%parentSeparator" file="Interface\addons\LFT\images\ui-lfg-separator">
+                    <Size>
+                        <AbsDimension x="256" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="40" y="-35"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="%parentArtTop" file="Interface\addons\LFT\images\dungeon_ready_top">
+                    <Size>
+                        <AbsDimension x="512" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="12" y="-8"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="%parentArtTop" file="Interface\addons\LFT\images\dungeon_ready_middle">
+                    <Size>
+                        <AbsDimension x="512" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="12" y="-72"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <Texture name="%parentRole" file="Interface\addons\LFT\images\tank2">
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-77"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <FontString name="%parentGroupText" inherits="GameFontWhite" text="A group has been formed for:">
+                    <Size>
+                        <AbsDimension x="100" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-14"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="%parentDungeonName" inherits="GameFontNormalLarge" text="Scholomance">
+                    <Size>
+                        <AbsDimension x="100" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-44"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="%parentYourRoleText" inherits="GameFontHighlightSmall" text="Your Role">
+                    <Size>
+                        <AbsDimension x="100" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="-70" y="-84"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="%parentMyRole" inherits="GameFontNormalLarge" text="Tank">
+                    <Size>
+                        <AbsDimension x="100" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="-70" y="-100"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="%parentAwesome" inherits="UIPanelButtonTemplate2" text="Screw that jazz">
+                <Size>
+                    <AbsDimension x="150" y="40"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="0" y="20"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            --                            fillDungeons()
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+    </Frame>
+
+    <Frame name="LFTMain" hidden="false" toplevel="true"
+           parent="UIParent" movable="true" enableMouse="true" resizable="false">
+        <Size>
+            <AbsDimension x="384" y="512"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture file="Interface\addons\LFT\images\ui-lfg-portrait">
+                    <!--                <Texture file="Interface\Addons\LFT\images\damage">-->
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="7" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture file="interface/paperdoll/ui-paperdoll-slotbackground.blp">
+                    <Size>
+                        <AbsDimension x="630" y="512"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="-30" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture name="LFTFrame" file="Interface\addons\LFT\images\ui-lfg-frame">
+                    <Size>
+                        <AbsDimension x="512" y="512"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString name="LFTTitleText" inherits="GameFontNormal" text="Turtle Finder">
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-18"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+
+                <FontString name="LFTTitleTime" inherits="GameFontNormal" text="---TIME---">
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-130"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+
+
+
+                <Texture name="LFTTankBackground2" file="Interface\Addons\LFT\images\tank2">
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="-100" y="-50"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+
+<!--                <Texture name="LFTTankBackground" file="Interface\Addons\LFT\images\tank">-->
+<!--                    <Size>-->
+<!--                        <AbsDimension x="296" y="148"/>-->
+<!--                    </Size>-->
+<!--                    <Anchors>-->
+<!--                        <Anchor point="LEFT" relativeTo="LFTTankBackground2"  relativePoint="LEFT">-->
+<!--                            <Offset>-->
+<!--                                <AbsDimension x="-12" y="-30"/>-->
+<!--                            </Offset>-->
+<!--                        </Anchor>-->
+<!--                    </Anchors>-->
+<!--                </Texture>-->
+
+                <!--                <Texture name="LFTHealerBackground" file="Interface\Addons\LFT\images\healer">-->
+                <!--                    <Size>-->
+                <!--                        <AbsDimension x="384" y="192"/>-->
+                <!--                    </Size>-->
+                <!--                    <Anchors>-->
+                <!--                        <Anchor point="TOP">-->
+                <!--                            <Offset>-->
+                <!--                                <AbsDimension x="134" y="-65"/>-->
+                <!--                            </Offset>-->
+                <!--                        </Anchor>-->
+                <!--                    </Anchors>-->
+                <!--                </Texture>-->
+                <Texture name="LFTHealerBackground2" file="Interface\Addons\LFT\images\healer2">
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="-5" y="-50"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+
+                <!--                <Texture name="LFTDamageBackground" file="Interface\Addons\LFT\images\damage">-->
+                <!--                    <Size>-->
+                <!--                        <AbsDimension x="384" y="192"/>-->
+                <!--                    </Size>-->
+                <!--                    <Anchors>-->
+                <!--                        <Anchor point="TOP">-->
+                <!--                            <Offset>-->
+                <!--                                <AbsDimension x="234" y="-65"/>-->
+                <!--                            </Offset>-->
+                <!--                        </Anchor>-->
+                <!--                    </Anchors>-->
+                <!--                </Texture>-->
+                <Texture name="LFTDamageBackground2" file="Interface\Addons\LFT\images\damage2">
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="90" y="-50"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+
+                <FontString name="LFTDungeonsText" inherits="GameFontNormal" text="Available Dungeons">
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="30" y="-165"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+
+            <Button name="LFT_Minimap" movable="true" parent="UIParent" enableMouse="true" toplevel="true"
+                    frameStrata="LOW">
+                <Size x="33" y="33"/>
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="Minimap" relativePoint="LEFT"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture name="$parentEye" file="Interface\Addons\LFT\images\eye\battlenetworking0">
+                            <Size x="38" y="38"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT">
+                                    <Offset x="-3" y="3"/>
+                                </Anchor>
+                            </Anchors>
+<!--                            <TexCoords left="0.075" right="0.925" top="0.075" bottom="0.925"/>-->
+                        </Texture>
+                    </Layer>
+                    <Layer level="OVERLAY">
+                        <Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+                            <Size x="56" y="56"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
+                <Scripts>
+                    <OnLoad>
+                            this:RegisterForClicks("RightButtonUp")
+                            this:RegisterForDrag("LeftButton")
+                            this:SetClampedToScreen(true)
+                    </OnLoad>
+                    <OnDragStart>
+                            this:LockHighlight()
+                            this:StartMoving()
+                    </OnDragStart>
+                    <OnDragStop>
+                            this:UnlockHighlight()
+                            this:StopMovingOrSizing()
+                    </OnDragStop>
+                    <OnEnter>
+                            LFT_ShowTooltip(this)
+
+                    </OnEnter>
+                    <OnLeave>
+                            GameTooltip:Hide()
+                    </OnLeave>
+                    <OnMouseUp>
+                            if arg1 == "LeftButton" then
+                                LFT_Toggle()
+                            else
+--                                ShowTWLCMinimapDropdown()
+                            end
+                    </OnMouseUp>
+                </Scripts>
+            </Button>
+
+            <Button name="LFTCloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-27" y="-8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+
+
+            <CheckButton name="RoleTank">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="60" y="-95"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            LFTsetRole('tank', this:GetChecked())
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+                <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+                <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+                <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+            </CheckButton>
+
+            <CheckButton name="RoleHealer">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="155" y="-95"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            LFTsetRole('healer', this:GetChecked())
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+                <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+                <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+                <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+            </CheckButton>
+
+            <CheckButton name="RoleDamage">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="250" y="-95"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            LFTsetRole('damage', this:GetChecked())
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+                <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+                <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+                <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+            </CheckButton>
+
+            <Button name="fillDungeons" inherits="UIPanelButtonTemplate2" text="Fill dungoens" hidden="true">
+                <Size>
+                    <AbsDimension x="150" y="40"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            fillDungeons()
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+            <Button name="findGroupButton" inherits="UIPanelButtonTemplate2" text="Find Group">
+                <Size>
+                    <AbsDimension x="104" y="21"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="-8" y="79"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            findGroup()
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                    this:RegisterForDrag("LeftButton");
+                    this:SetMovable(1);
+                    this:SetUserPlaced(true);
+            </OnLoad>
+            <OnDragStart>
+                    this:StartMoving();
+                    this.isMoving = true;
+            </OnDragStart>
+            <OnDragStop>
+                    this:StopMovingOrSizing();
+                    this.isMoving = false;
+            </OnDragStop>
+        </Scripts>
+    </Frame>
+
+
+</Ui>
