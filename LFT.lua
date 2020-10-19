@@ -1,5 +1,10 @@
 local LFT = CreateFrame("Frame")
 local me = UnitName('player')
+local addonVer = '0.0.0.1'
+
+--todo - update message
+
+local LFTTypeDropDown = CreateFrame('Frame', 'LFTTypeDropDown', UIParent, 'UIDropDownMenuTemplate')
 
 LFT.class = ''
 LFT.channel = 'LFT'
@@ -9,13 +14,23 @@ LFT.findingGroup = false
 LFT:RegisterEvent("ADDON_LOADED")
 LFT:RegisterEvent("PLAYER_ENTERING_WORLD")
 LFT:RegisterEvent("RAID_TARGET_UPDATE")
+LFT:RegisterEvent("PLAYER_LEVEL_UP")
 LFT.availableDungeons = {}
 LFT.group = {}
 LFT.oneGroupFull = false
 LFT.groupFullCode = ''
 LFT.acceptNextInvite = false
 LFT.queueStartTime = 0
+LFT.types = {
+    [1] = 'Suggested Dungeons',
+    [2] = 'Random Dungeon',
+    [3] = 'All Available Dungeons'
+}
+LFT.maxDungeonsList = 11
 
+local COLOR_RED = '|cffff222a';
+local COLOR_ORANGE = '|cffff8000';
+local COLOR_GREEN = '|cff1fba1f';
 
 local LFTQueue = CreateFrame("Frame")
 LFTQueue:Hide()
@@ -61,10 +76,15 @@ LFTComms:Hide()
 LFTComms:RegisterEvent("CHAT_MSG_CHANNEL")
 LFTComms:RegisterEvent("CHAT_MSG_WHISPER")
 LFTComms:RegisterEvent("PARTY_INVITE_REQUEST")
+LFTComms:RegisterEvent("CHAT_MSG_ADDON")
 
 
 LFTComms:SetScript("OnEvent", function()
     if event then
+        if event == 'CHAT_MSG_ADDON' and arg1 == 'LFT' then
+            if string.find(arg2, 'roleCheck', 1, true) then
+            end
+        end
         if event == 'PARTY_INVITE_REQUEST' and LFT.acceptNextInvite then
             LFT.AcceptGroupInvite()
             LFT.acceptNextInvite = false
@@ -140,6 +160,13 @@ LFTComms:SetScript("OnEvent", function()
                     SendChatMessage("[LFT] " .. code .. " party ready ", "WHISPER", "Common", dps2);
                     SendChatMessage("[LFT] " .. code .. " party ready ", "WHISPER", "Common", dps3);
 
+                    --untick everything except groupFUllCode
+                    for i, frame in LFT.availableDungeons do
+                        if frame.code ~= code then
+                            getglobal('Dungeon_' .. code):SetChecked(false)
+                        end
+                    end
+
                     LFTInvite:Show()
                 end
             end
@@ -176,14 +203,11 @@ LFT:SetScript("OnEvent", function()
     if event then
         if event == "ADDON_LOADED" and arg1 == 'LFT' then
             LFT.init()
-            lfprint(LFT_ROLE)
-            if not LFT_ROLE then
-                LFT_ROLE = LFT.GetPossibleRoles()
-            else
-                LFTsetRole(LFT_ROLE)
-            end
         end
         if event == "PLAYER_ENTERING_WORLD" then
+
+            LFT.level = UnitLevel('player')
+
             --            local zone = GetZoneText
             --            for dungeon, data in next, LFT.dungeons do
             --                if dungeon == zone then
@@ -197,10 +221,26 @@ LFT:SetScript("OnEvent", function()
             end
             LFT.fixMainButton()
         end
+        if event == 'PLAYER_LEVEL_UP' then
+            lfdebug('level up')
+            LFT.level = arg1
+            LFT.fillAvailableDungeons()
+        end
     end
 end)
 
 function LFT.init()
+    if not LFT_TYPE then
+        LFT_TYPE = 1
+    end
+    UIDropDownMenu_SetText(LFT.types[LFT_TYPE], getglobal('LFTTypeSelect'));
+    getglobal('LFTDungeonsText'):SetText(LFT.types[LFT_TYPE])
+    if not LFT_ROLE then
+        LFT_ROLE = LFT.GetPossibleRoles()
+    else
+        LFTsetRole(LFT_ROLE)
+    end
+
     local _, uClass = UnitClass('player')
 
     LFT.class = string.lower(uClass)
@@ -219,6 +259,8 @@ function LFT.init()
     LFT.fixMainButton()
 
     LFT.fillAvailableDungeons()
+
+    lfprint('LFT v' .. addonVer .. ' - |cffabd473Looking For Turtles|cffffffff - LFG Addon for Turtle WoW loaded.')
 end
 
 
@@ -249,7 +291,6 @@ LFTQueue:SetScript("OnUpdate", function()
         end
 
         if (cSecond == '00' or cSecond == '30') and LFT_ROLE == 'tank' and this.lastTime.tank ~= time() then
-
             for dungeon, data in next, LFT.dungeons do
                 if data.queued then
                     LFT.group[data.code].tank = me
@@ -267,7 +308,7 @@ LFTQueue:SetScript("OnUpdate", function()
             this.lastTime.heal = time()
         end
 
-        if (cSecond == '15' or cSecond == '15') and LFT_ROLE == 'damage' and this.lastTime.dps ~= time() then
+        if (cSecond == '15' or cSecond == '45') and LFT_ROLE == 'damage' and this.lastTime.dps ~= time() then
             for dungeon, data in next, LFT.dungeons do
                 if data.queued then
                     LFT.sendLFMessage('LFG:' .. data.code .. ':' .. LFT_ROLE)
@@ -315,6 +356,11 @@ function LFT.checkLFTChannel()
     end
 end
 
+function sayReady()
+    getglobal('LFTGroupReady'):Hide()
+    SendChatMessage('Ready as ' .. LFT_ROLE, "PARTY");
+end
+
 function LFTsetRole(role, status)
     local tankCheck = getglobal('RoleTank')
     local healerCheck = getglobal('RoleHealer')
@@ -355,7 +401,7 @@ function LFT.GetPossibleRoles()
         damageCheck:SetChecked(false)
         return 'tank'
     end
-    if LFT.class == 'paladin' or LFT.class == 'druid' then
+    if LFT.class == 'paladin' or LFT.class == 'druid' or LFT.class == 'shaman' then
         tankCheck:Enable();
         tankCheck:SetChecked(false)
         healerCheck:Enable()
@@ -364,11 +410,14 @@ function LFT.GetPossibleRoles()
         damageCheck:SetChecked(false)
         return 'healer'
     end
-    if LFT.class == 'warlock' or LFT.class == 'hunter' then
-        tankCheck:Disable();
-        tankCheck:SetChecked(false)
-        healerCheck:Disable()
-        healerCheck:SetChecked(false)
+    if LFT.class == 'priest' then
+        healerCheck:Enable()
+        healerCheck:SetChecked(true)
+        damageCheck:Enable()
+        damageCheck:SetChecked(false)
+        return 'healer'
+    end
+    if LFT.class == 'warlock' or LFT.class == 'hunter' or LFT.class == 'mage' or LFT.class == 'rogue' then
         damageCheck:Enable()
         damageCheck:SetChecked(true)
         return 'damage'
@@ -376,40 +425,97 @@ function LFT.GetPossibleRoles()
     return 'damage'
 end
 
-function fillDungeons() -- to be removed
-    LFT.fillAvailableDungeons()
-end
-
 function LFT.sendLFMessage(msg)
     lfdebug(msg)
     SendChatMessage(msg, "CHANNEL", DEFAULT_CHAT_FRAME.editBox.languageID, GetChannelName(LFT.channel));
 end
 
-function LFT.fillAvailableDungeons()
-    --clear checkboxes
-
-    LFT.level = UnitLevel('player')
-
-    local dungeonIndex = 0
+function LFT.fillAvailableDungeons(offset)
+    if not offset then offset = 0 end
+    lfdebug('fill avail ' .. offset)
+    --un queueue from dungones ouside my level
     for dungeon, data in next, LFT.dungeons do
-        if LFT.level >= data.minLevel and LFT.level <= data.maxLevel then
-
-            dungeonIndex = dungeonIndex + 1
-            if not LFT.availableDungeons[dungeonIndex] then
-                LFT.availableDungeons[dungeonIndex] = CreateFrame("CheckButton", "Dungeon_" .. data.code, getglobal("LFTMain"), "LFT_DungeonCheck")
-            end
-
-            local color = ''
-            if LFT.level == data.minLevel then color = '|cffff222a' end
-            if LFT.level == data.maxLevel then color = '|cff1fba1f' end
-            getglobal('Dungeon_' .. data.code .. 'Text'):SetText(color .. dungeon)
-            getglobal('Dungeon_' .. data.code .. 'Levels'):SetText(color .. '(' .. data.minLevel .. ' - ' .. data.maxLevel .. ')')
-            --error here when dinging and dungeons change
-
-            LFT.availableDungeons[dungeonIndex]:SetPoint("TOP", getglobal("LFTMain"), "TOP", -145, -165 - 20 * dungeonIndex)
-            LFT.availableDungeons[dungeonIndex].code = data.code
+        if data.queued and (LFT.level < data.minLevel or LFT.level > data.maxLevel) then
+            LFT.dungeons[dungeon].queued = false
+            lfdebug('un-queued ' .. dungeon .. ' outside my lvl ')
         end
     end
+
+    --clear checkboxes ?
+
+    for i, frame in next, LFT.availableDungeons do
+        getglobal("Dungeon_" .. frame.code):Hide()
+    end
+
+    LFT.dungeons = LFT.sortTheDamnDungeons(LFT.dungeons)
+
+    local dungeonIndex = 0
+    for dungeon, data in pairs(LFT.dungeons) do
+        if LFT.level >= data.minLevel and LFT.level <= data.maxLevel and LFT_TYPE ~= 3 then
+
+            dungeonIndex = dungeonIndex + 1
+            if dungeonIndex > offset and dungeonIndex <= offset + LFT.maxDungeonsList then
+                if not LFT.availableDungeons[data.code] then
+                    LFT.availableDungeons[data.code] = CreateFrame("CheckButton", "Dungeon_" .. data.code, getglobal("LFTMain"), "LFT_DungeonCheck")
+                end
+
+                LFT.availableDungeons[data.code]:Show()
+
+                local color = ''
+                if LFT.level == data.minLevel or LFT.level == data.minLevel + 1 then color = '|cffff222a' end
+                if LFT.level == data.minLevel + 2 then color = '|cffff8000' end
+                if LFT.level == data.maxLevel or LFT.level == data.maxLevel - 1 then color = '|cff1fba1f' end
+                getglobal('Dungeon_' .. data.code .. 'Text'):SetText(color .. dungeon)
+                getglobal('Dungeon_' .. data.code .. 'Levels'):SetText(color .. '(' .. data.minLevel .. ' - ' .. data.maxLevel .. ')')
+
+                LFT.availableDungeons[data.code]:SetPoint("TOP", getglobal("LFTMain"), "TOP", -145, -165 - 20 * (dungeonIndex - offset))
+                LFT.availableDungeons[data.code].code = data.code
+
+                LFT.dungeons[dungeon].queued = false
+                getglobal('Dungeon_' .. data.code):SetChecked(false)
+
+                if LFT_TYPE == 2 then
+                    LFT.dungeons[dungeon].queued = true
+                    getglobal('Dungeon_' .. data.code):SetChecked(true)
+                end
+            end
+        end
+
+        if LFT.level >= data.minLevel and LFT_TYPE == 3 then --all available
+
+            dungeonIndex = dungeonIndex + 1
+            if dungeonIndex > offset and dungeonIndex <= offset + LFT.maxDungeonsList then
+                if not LFT.availableDungeons[data.code] then
+                    LFT.availableDungeons[data.code] = CreateFrame("CheckButton", "Dungeon_" .. data.code, getglobal("LFTMain"), "LFT_DungeonCheck")
+                end
+
+                LFT.availableDungeons[data.code]:Show()
+
+                local color = COLOR_GREEN
+                if LFT.level == data.minLevel or LFT.level == data.minLevel + 1 then color = COLOR_RED end
+                if LFT.level == data.minLevel + 2 or LFT.level == data.minLevel + 3 then color = COLOR_ORANGE end
+                if LFT.level == data.minLevel + 4 or LFT.level == data.maxLevel + 5 then color = COLOR_GREEN end
+
+                if LFT.level > data.maxLevel then color = COLOR_GREEN end
+
+                getglobal('Dungeon_' .. data.code .. 'Text'):SetText(color .. dungeon)
+                getglobal('Dungeon_' .. data.code .. 'Levels'):SetText(color .. '(' .. data.minLevel .. ' - ' .. data.maxLevel .. ')')
+
+                LFT.availableDungeons[data.code]:SetPoint("TOP", getglobal("LFTMain"), "TOP", -145, -165 - 20 * (dungeonIndex - offset))
+                LFT.availableDungeons[data.code].code = data.code
+            end
+        end
+    end
+
+    LFT.fixMainButton()
+
+    FauxScrollFrame_Update(getglobal('DungeonListScrollFrame'), dungeonIndex, LFT.maxDungeonsList, 16)
+end
+
+function DungeonListFrame_Update()
+    local offset = FauxScrollFrame_GetOffset(getglobal('DungeonListScrollFrame'));
+    LFT.fillAvailableDungeons(offset)
+    lfdebug('DungeonListFrame_Update')
 end
 
 function queueFor(name, status)
@@ -432,6 +538,9 @@ function queueFor(name, status)
 end
 
 function LFT_Toggle()
+    if LFT.level == 0 then
+        LFT.level = UnitLevel('player')
+    end
     if getglobal('LFTMain'):IsVisible() then
         getglobal('LFTMain'):Hide()
     else
@@ -468,8 +577,6 @@ function findGroup()
         end
 
         LFT.queueStartTime = time()
-        lfprint(LFT.queueStartTime)
-
     else
         LFTQueue:Hide()
 
@@ -565,42 +672,29 @@ function LFT.checkGroupFull()
     return false, false, nil, nil, nil, nil
 end
 
---function getPlayerClass(name)
---    for i = 0, GetNumRaidMembers() do
---        if (GetRaidRosterInfo(i)) then
---            local n = GetRaidRosterInfo(i);
---            if (name == n) then
---                local _, unitClass = UnitClass('raid' .. i) --standard
---                return string.lower(unitClass)
---            end
---        end
---    end
---    return 'priest'
---end
-
 LFT.dungeons = {
     ['Ragefire Chasm'] = { minLevel = 13, maxLevel = 18, code = 'rfc', queued = false, background = 'ragefirechasm' },
     ['Wailing Caverns'] = { minLevel = 17, maxLevel = 24, code = 'wc', queued = false, background = 'wailingcaverns' },
-    ['The Deadmines'] = { minLevel = 18, maxLevel = 23, code = 'dm', queued = false, background = 'deadmines' },
+    ['The Deadmines'] = { minLevel = 19, maxLevel = 24, code = 'dm', queued = false, background = 'deadmines' },
     ['Shadowfang Keep'] = { minLevel = 22, maxLevel = 30, code = 'sfk', queued = false, background = 'shadowfangkeep' },
-    ['Blackfathom Deeps'] = { minLevel = 20, maxLevel = 30, code = 'bfd', queued = false, background = 'blackfathomdeeps' },
+    ['Blackfathom Deeps'] = { minLevel = 23, maxLevel = 32, code = 'bfd', queued = false, background = 'blackfathomdeeps' },
     ['The Stockade'] = { minLevel = 22, maxLevel = 30, code = 'stocks', queued = false, background = 'stormwindstockades' },
-    ['Gnomeregan'] = { minLevel = 24, maxLevel = 34, code = 'gnomer', queued = false, background = 'gnomeregan' },
-    ['Razorfen Kraul'] = { minLevel = 30, maxLevel = 40, code = 'rfk', queued = false, background = 'razorfenkraul' },
-    ['Scarlet Monastery Graveyard'] = { minLevel = 26, maxLevel = 45, code = 'smgy', queued = false, background = 'scarletmonastery' },
-    ['Scarlet Monastery Library'] = { minLevel = 26, maxLevel = 45, code = 'smlib', queued = false, background = 'scarletmonastery' },
-    ['Scarlet Monastery Armory'] = { minLevel = 26, maxLevel = 45, code = 'smarmory', queued = false, background = 'scarletmonastery' },
-    ['Scarlet Monastery Cathedral'] = { minLevel = 26, maxLevel = 45, code = 'smcath', queued = false, background = 'scarletmonastery' },
-    ['Razorfen Downs'] = { minLevel = 40, maxLevel = 50, code = 'rfd', queued = false, background = 'razorfendowns' },
-    ['Uldaman'] = { minLevel = 35, maxLevel = 45, code = 'ulda', queued = false, background = 'uldaman' },
-    ['Zul\'Farrak'] = { minLevel = 42, maxLevel = 46, code = 'zf', queued = false, background = 'zulfarak' },
-    ['Maraudon'] = { minLevel = 46, maxLevel = 55, code = 'mara', queued = false, background = 'maraudon' },
-    ['Temple of Atal\'Hakkar'] = { minLevel = 55, maxLevel = 60, code = 'st', queued = false, background = 'sunkentemple' },
+    ['Gnomeregan'] = { minLevel = 29, maxLevel = 38, code = 'gnomer', queued = false, background = 'gnomeregan' },
+    ['Razorfen Kraul'] = { minLevel = 29, maxLevel = 38, code = 'rfk', queued = false, background = 'razorfenkraul' },
+    ['Scarlet Monastery Graveyard'] = { minLevel = 27, maxLevel = 36, code = 'smgy', queued = false, background = 'scarletmonastery' },
+    ['Scarlet Monastery Library'] = { minLevel = 28, maxLevel = 39, code = 'smlib', queued = false, background = 'scarletmonastery' },
+    ['Scarlet Monastery Armory'] = { minLevel = 32, maxLevel = 41, code = 'smarmory', queued = false, background = 'scarletmonastery' },
+    ['Scarlet Monastery Cathedral'] = { minLevel = 35, maxLevel = 45, code = 'smcath', queued = false, background = 'scarletmonastery' },
+    ['Razorfen Downs'] = { minLevel = 36, maxLevel = 46, code = 'rfd', queued = false, background = 'razorfendowns' },
+    ['Uldaman'] = { minLevel = 50, maxLevel = 51, code = 'ulda', queued = false, background = 'uldaman' },
+    ['Zul\'Farrak'] = { minLevel = 44, maxLevel = 54, code = 'zf', queued = false, background = 'zulfarak' },
+    ['Maraudon'] = { minLevel = 47, maxLevel = 55, code = 'mara', queued = false, background = 'maraudon' },
+    ['Temple of Atal\'Hakkar'] = { minLevel = 50, maxLevel = 60, code = 'st', queued = false, background = 'sunkentemple' },
     ['Blackrock Depths'] = { minLevel = 52, maxLevel = 60, code = 'brd', queued = false, background = 'blackrockdepths' },
     ['Lower Blackrock Spire'] = { minLevel = 55, maxLevel = 60, code = 'lbrs', queued = false, background = 'blackrockspire' },
-    ['Dire Maul North'] = { minLevel = 55, maxLevel = 60, code = 'dmn', queued = false, background = 'diremaul' },
+    ['Dire Maul North'] = { minLevel = 57, maxLevel = 60, code = 'dmn', queued = false, background = 'diremaul' },
     ['Dire Maul East'] = { minLevel = 55, maxLevel = 60, code = 'dme', queued = false, background = 'diremaul' },
-    ['Dire Maul West'] = { minLevel = 55, maxLevel = 60, code = 'dmw', queued = false, background = 'diremaul' },
+    ['Dire Maul West'] = { minLevel = 57, maxLevel = 60, code = 'dmw', queued = false, background = 'diremaul' },
     ['Scholomance'] = { minLevel = 58, maxLevel = 60, code = 'scholo', queued = false, background = 'scholomance' },
     ['Stratholme UD'] = { minLevel = 58, maxLevel = 60, code = 'stratud', queued = false, background = 'stratholme' },
     ['Stratholme Live'] = { minLevel = 58, maxLevel = 60, code = 'stratlive', queued = false, background = 'stratholme' },
@@ -641,11 +735,6 @@ function LFT.AcceptGroupInvite()
     UIErrorsFrame:AddMessage("[LFT] Group Auto Accept");
 end
 
-function LFT.levelSort(a)
-    local r = {}
-    local level = 0
-end
-
 function LFT.pairsByKeys(t, f)
     local a = {}
     for n, l in pairs(t) do table.insert(a, l.minLevel)
@@ -662,6 +751,30 @@ function LFT.pairsByKeys(t, f)
     return iter
 end
 
+function LFT.sortTheDamnDungeons(t)
+    local min = 70
+    local newT = t
+    local k = 0
+    local sorted = {}
+    for nn, dd in next, t do
+        local min = 70
+        for n, d in next, newT do
+            if d.minLevel <= min then
+                min = d.minLevel
+                k = n
+            end
+        end
+        sorted[k] = newT[k]
+        newT[k] = nil
+    end
+    return sorted
+end
+
+function LFT.tableSize(t)
+    local size = 0
+    for _, _ in next, t do size = size + 1 end return size
+end
+
 function LFT.fixMainButton()
 
     local buttonEnabled = true
@@ -670,7 +783,7 @@ function LFT.fixMainButton()
     local inGroup = not inRaid and GetNumPartyMembers() > 0
 
     if inGroup then
-        if not UnitIsGroupLeader('player') then
+        if not LFT.playerIsPartyLeader() then
             buttonEnabled = false
         end
         if GetNumPartyMembers() < 5 then
@@ -696,6 +809,32 @@ function LFT.fixMainButton()
     end
 
     getglobal('findGroupButton'):SetText(buttonText)
+end
+
+function DungeonType_OnLoad()
+    UIDropDownMenu_Initialize(this, DungeonType_Initialize);
+    UIDropDownMenu_SetWidth(160, LFTTypeSelect);
+end
+
+function DungeonType_Initialize()
+    for id, type in pairs(LFT.types) do
+        local info = {}
+        info.text = type
+        info.value = id
+        info.arg1 = id
+        info.checked = LFT_TYPE == id
+        info.func = DungeonType_OnClick
+        if not LFT.findingGroup then
+            UIDropDownMenu_AddButton(info)
+        end
+    end
+end
+
+function DungeonType_OnClick(a)
+    LFT_TYPE = a
+    UIDropDownMenu_SetText(LFT.types[LFT_TYPE], getglobal('LFTTypeSelect'))
+    getglobal('LFTDungeonsText'):SetText(LFT.types[LFT_TYPE])
+    LFT.fillAvailableDungeons()
 end
 
 function LFT_ShowTooltip(t)
@@ -727,4 +866,15 @@ function LFT_ShowTooltip(t)
     end
 
     GameTooltip:Show()
+end
+
+function LFT.ver(ver)
+    return tonumber(string.sub(ver, 1, 1)) * 1000 +
+            tonumber(string.sub(ver, 3, 3)) * 100 +
+            tonumber(string.sub(ver, 5, 5)) * 10 +
+            tonumber(string.sub(ver, 7, 7)) * 1
+end
+
+function LFT.playerIsPartyLeader()
+    return GetPartyLeaderIndex() == 0
 end
