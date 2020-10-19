@@ -3,6 +3,7 @@ local me = UnitName('player')
 local addonVer = '0.0.0.1'
 
 --todo - update message
+--todo - role check
 
 local LFTTypeDropDown = CreateFrame('Frame', 'LFTTypeDropDown', UIParent, 'UIDropDownMenuTemplate')
 
@@ -94,8 +95,21 @@ LFTComms:SetScript("OnEvent", function()
             local mEx = string.split(arg1, ' ')
             LFT.acceptNextInvite = true
             lfdebug('should accept next invite')
+            local background = ''
+            local dungeonName = 'unknown'
+            for d, data in next, LFT.dungeons do
+                if data.code == mEx[2] then
+                    background = data.background
+                    dungeonName = d
+                end
+            end
+            getglobal('LFTGroupReadyBackground'):SetTexture('Interface\\addons\\LFT\\images\\background\\ui-lfg-background-' .. background)
+            getglobal('LFTGroupReadyRole'):SetTexture('Interface\\addons\\LFT\\images\\' .. LFT_ROLE .. '2')
+            getglobal('LFTGroupReadyMyRole'):SetText(LFT.ucFirst(LFT_ROLE))
+            getglobal('LFTGroupReadyDungeonName'):SetText(dungeonName)
+            getglobal('LFTGroupReady'):Show()
         end
-        if event == 'CHAT_MSG_CHANNEL' and arg8 == LFT.channelIndex and not LFT.oneGroupFull then -- and arg2 ~= me then
+        if event == 'CHAT_MSG_CHANNEL' and arg8 == LFT.channelIndex and not LFT.oneGroupFull and arg2 ~= me and LFT.findingGroup then
             lfdebug('chat msg channel msg : ' .. arg1)
 
             local spamSplit = string.split(arg1, ':')
@@ -166,6 +180,20 @@ LFTComms:SetScript("OnEvent", function()
                             getglobal('Dungeon_' .. code):SetChecked(false)
                         end
                     end
+
+                    local background = ''
+                    local dungeonName = 'unknown'
+                    for d, data in next, LFT.dungeons do
+                        if data.code == code then
+                            background = data.background
+                            dungeonName = d
+                        end
+                    end
+                    getglobal('LFTGroupReadyBackground'):SetTexture('Interface\\addons\\LFT\\images\\background\\ui-lfg-background-' .. background)
+                    getglobal('LFTGroupReadyRole'):SetTexture('Interface\\addons\\LFT\\images\\' .. LFT_ROLE .. '2')
+                    getglobal('LFTGroupReadyMyRole'):SetText(LFT.ucFirst(LFT_ROLE))
+                    getglobal('LFTGroupReadyDungeonName'):SetText(dungeonName)
+                    getglobal('LFTGroupReady'):Show()
 
                     LFTInvite:Show()
                 end
@@ -369,7 +397,7 @@ function LFTsetRole(role, status)
     if role == 'tank' then
         healerCheck:SetChecked(false)
         damageCheck:SetChecked(false)
-        if not status then tankCheck:SetChecked(true) end --todo maybe change to status == nil
+        if not status then tankCheck:SetChecked(true) end
     end
     if role == 'healer' then
         tankCheck:SetChecked(false)
@@ -435,6 +463,7 @@ function LFT.fillAvailableDungeons(offset)
     lfdebug('fill avail ' .. offset)
     --un queueue from dungones ouside my level
     for dungeon, data in next, LFT.dungeons do
+        LFT.dungeons[dungeon].checked = false
         if data.queued and (LFT.level < data.minLevel or LFT.level > data.maxLevel) then
             LFT.dungeons[dungeon].queued = false
             lfdebug('un-queued ' .. dungeon .. ' outside my lvl ')
@@ -447,9 +476,9 @@ function LFT.fillAvailableDungeons(offset)
         getglobal("Dungeon_" .. frame.code):Hide()
     end
 
-    LFT.dungeons = LFT.sortTheDamnDungeons(LFT.dungeons)
 
     local dungeonIndex = 0
+
     for dungeon, data in pairs(LFT.dungeons) do
         if LFT.level >= data.minLevel and LFT.level <= data.maxLevel and LFT_TYPE ~= 3 then
 
@@ -656,7 +685,7 @@ function LFT.checkGroupFull()
                 LFT.oneGroupFull = true
                 LFT.group[data.code].full = true
 
-                return true, data.code, LFT.group[data.code].healer, LFT.group[data.code].dps1, LFT.group[data.code].dps3, LFT.group[data.code].dps3
+                return true, data.code, LFT.group[data.code].healer, LFT.group[data.code].dps1, LFT.group[data.code].dps2, LFT.group[data.code].dps3
             else
                 lfdebug('group not full ' .. data.code)
                 lfdebug(LFT.group[data.code].tank .. ', ' .. LFT.group[data.code].healer ..
@@ -749,25 +778,6 @@ function LFT.pairsByKeys(t, f)
         end
     end
     return iter
-end
-
-function LFT.sortTheDamnDungeons(t)
-    local min = 70
-    local newT = t
-    local k = 0
-    local sorted = {}
-    for nn, dd in next, t do
-        local min = 70
-        for n, d in next, newT do
-            if d.minLevel <= min then
-                min = d.minLevel
-                k = n
-            end
-        end
-        sorted[k] = newT[k]
-        newT[k] = nil
-    end
-    return sorted
 end
 
 function LFT.tableSize(t)
@@ -877,4 +887,8 @@ end
 
 function LFT.playerIsPartyLeader()
     return GetPartyLeaderIndex() == 0
+end
+
+function LFT.ucFirst(a)
+    return string.upper(string.sub(a, 1, 1)) .. string.lower(string.sub(a, 2, string.len(a)))
 end
