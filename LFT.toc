@@ -3,5 +3,5 @@
 ## Author: Xerron/Er
 ## Version: 1.0.0.0
 ## Notes: LFG Addon
-## SavedVariables: LFT_ROLE
+## SavedVariables: LFT_ROLE, LFT_TYPE
 LFT.xml
