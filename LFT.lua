@@ -1,6 +1,6 @@
 local LFT = CreateFrame("Frame")
 local me = UnitName('player')
-local addonVer = '0.0.0.1'
+local addonVer = '0.0.1.0'
 
 --todo - update message
 --todo - role check
@@ -28,6 +28,7 @@ LFT.types = {
     [3] = 'All Available Dungeons'
 }
 LFT.maxDungeonsList = 11
+LFT.minimapFrames = {}
 
 local COLOR_RED = '|cffff222a';
 local COLOR_ORANGE = '|cffff8000';
@@ -53,19 +54,15 @@ LFTInvite:SetScript("OnUpdate", function()
         this.inviteIndex = this.inviteIndex + 1
 
         if this.inviteIndex == 2 then
-            lfdebug('inviting : ' .. LFT.group[LFT.groupFullCode].healer)
             InviteByName(LFT.group[LFT.groupFullCode].healer)
         end
         if this.inviteIndex == 3 then
-            lfdebug('inviting : ' .. LFT.group[LFT.groupFullCode].dps1)
             InviteByName(LFT.group[LFT.groupFullCode].dps1)
         end
         if this.inviteIndex == 4 then
-            lfdebug('inviting : ' .. LFT.group[LFT.groupFullCode].dps2)
             InviteByName(LFT.group[LFT.groupFullCode].dps2)
         end
         if this.inviteIndex == 5 then
-            lfdebug('inviting : ' .. LFT.group[LFT.groupFullCode].dps3)
             InviteByName(LFT.group[LFT.groupFullCode].dps3)
             LFTInvite:Hide()
         end
@@ -94,7 +91,7 @@ LFTComms:SetScript("OnEvent", function()
                 string.find(arg1, 'party ready', 1, true) then
             local mEx = string.split(arg1, ' ')
             LFT.acceptNextInvite = true
-            lfdebug('should accept next invite')
+
             local background = ''
             local dungeonName = 'unknown'
             for d, data in next, LFT.dungeons do
@@ -108,9 +105,13 @@ LFTComms:SetScript("OnEvent", function()
             getglobal('LFTGroupReadyMyRole'):SetText(LFT.ucFirst(LFT_ROLE))
             getglobal('LFTGroupReadyDungeonName'):SetText(dungeonName)
             getglobal('LFTGroupReady'):Show()
+
+            LFT.findingGroup = false
+
+            LFT.fixMainButton()
         end
-        if event == 'CHAT_MSG_CHANNEL' and arg8 == LFT.channelIndex and not LFT.oneGroupFull and arg2 ~= me and LFT.findingGroup then
-            lfdebug('chat msg channel msg : ' .. arg1)
+
+        if event == 'CHAT_MSG_CHANNEL' and arg8 == LFT.channelIndex and not LFT.oneGroupFull and LFT.findingGroup and arg2 ~= me then
 
             local spamSplit = string.split(arg1, ':')
             local mDungeonCode = spamSplit[2]
@@ -121,11 +122,9 @@ LFTComms:SetScript("OnEvent", function()
 
                     if LFT_ROLE == 'tank' then
                         LFT.group[mDungeonCode].tank = me
-                        lfdebug('added tank me = ' .. me)
 
                         if mRole == 'healer' and LFT.group[mDungeonCode].healer == '' then
                             LFT.group[mDungeonCode].healer = arg2
-                            lfdebug('added healer = ' .. arg2)
                         end
 
                         if mRole == 'damage' then
@@ -136,11 +135,9 @@ LFTComms:SetScript("OnEvent", function()
                     --pseudo fill group for tooltip display
                     if LFT_ROLE == 'healer' then
                         LFT.group[mDungeonCode].healer = me
-                        lfdebug('added pseudo healer me = ' .. me)
 
                         if mRole == 'tank' and LFT.group[mDungeonCode].tank == '' then
                             LFT.group[mDungeonCode].tank = arg2
-                            lfdebug('added pseudo tank = ' .. arg2)
                         end
 
                         if mRole == 'damage' then
@@ -152,11 +149,9 @@ LFTComms:SetScript("OnEvent", function()
                         LFT.addDps(dungeon, me, true)
                         if mRole == 'tank' and LFT.group[mDungeonCode].tank == '' then
                             LFT.group[mDungeonCode].tank = arg2
-                            lfdebug('added pseudo tank = ' .. arg2)
                         end
                         if mRole == 'healer' and LFT.group[mDungeonCode].healer == '' then
                             LFT.group[mDungeonCode].healer = arg2
-                            lfdebug('added pseudo healer = ' .. arg2)
                         end
                     end
                 end
@@ -181,6 +176,8 @@ LFTComms:SetScript("OnEvent", function()
                         end
                     end
 
+                    LFT.findingGroup = false
+
                     local background = ''
                     local dungeonName = 'unknown'
                     for d, data in next, LFT.dungeons do
@@ -194,6 +191,8 @@ LFTComms:SetScript("OnEvent", function()
                     getglobal('LFTGroupReadyMyRole'):SetText(LFT.ucFirst(LFT_ROLE))
                     getglobal('LFTGroupReadyDungeonName'):SetText(dungeonName)
                     getglobal('LFTGroupReady'):Show()
+
+                    LFT.fixMainButton()
 
                     LFTInvite:Show()
                 end
@@ -233,15 +232,7 @@ LFT:SetScript("OnEvent", function()
             LFT.init()
         end
         if event == "PLAYER_ENTERING_WORLD" then
-
             LFT.level = UnitLevel('player')
-
-            --            local zone = GetZoneText
-            --            for dungeon, data in next, LFT.dungeons do
-            --                if dungeon == zone then
-            --                    lfdebug('found player in ' .. )
-            --                end
-            --            end
         end
         if event == "RAID_TARGET_UPDATE" then
             if LFT.findingGroup then
@@ -250,7 +241,6 @@ LFT:SetScript("OnEvent", function()
             LFT.fixMainButton()
         end
         if event == 'PLAYER_LEVEL_UP' then
-            lfdebug('level up')
             LFT.level = arg1
             LFT.fillAvailableDungeons()
         end
@@ -454,32 +444,26 @@ function LFT.GetPossibleRoles()
 end
 
 function LFT.sendLFMessage(msg)
-    lfdebug(msg)
     SendChatMessage(msg, "CHANNEL", DEFAULT_CHAT_FRAME.editBox.languageID, GetChannelName(LFT.channel));
 end
 
 function LFT.fillAvailableDungeons(offset)
     if not offset then offset = 0 end
-    lfdebug('fill avail ' .. offset)
-    --un queueue from dungones ouside my level
+
     for dungeon, data in next, LFT.dungeons do
         LFT.dungeons[dungeon].checked = false
         if data.queued and (LFT.level < data.minLevel or LFT.level > data.maxLevel) then
             LFT.dungeons[dungeon].queued = false
-            lfdebug('un-queued ' .. dungeon .. ' outside my lvl ')
         end
     end
-
-    --clear checkboxes ?
 
     for i, frame in next, LFT.availableDungeons do
         getglobal("Dungeon_" .. frame.code):Hide()
     end
 
-
     local dungeonIndex = 0
 
-    for dungeon, data in pairs(LFT.dungeons) do
+    for dungeon, data in next, LFT.dungeons do
         if LFT.level >= data.minLevel and LFT.level <= data.maxLevel and LFT_TYPE ~= 3 then
 
             dungeonIndex = dungeonIndex + 1
@@ -490,18 +474,20 @@ function LFT.fillAvailableDungeons(offset)
 
                 LFT.availableDungeons[data.code]:Show()
 
-                local color = ''
-                if LFT.level == data.minLevel or LFT.level == data.minLevel + 1 then color = '|cffff222a' end
-                if LFT.level == data.minLevel + 2 then color = '|cffff8000' end
-                if LFT.level == data.maxLevel or LFT.level == data.maxLevel - 1 then color = '|cff1fba1f' end
+                local color = COLOR_GREEN
+                if LFT.level == data.minLevel or LFT.level == data.minLevel + 1 then color = COLOR_RED end
+                if LFT.level == data.minLevel + 2 or LFT.level == data.minLevel + 3 then color = COLOR_ORANGE end
+                if LFT.level == data.minLevel + 4 or LFT.level == data.maxLevel + 5 then color = COLOR_GREEN end
+
+                if LFT.level > data.maxLevel then color = COLOR_GREEN end
                 getglobal('Dungeon_' .. data.code .. 'Text'):SetText(color .. dungeon)
                 getglobal('Dungeon_' .. data.code .. 'Levels'):SetText(color .. '(' .. data.minLevel .. ' - ' .. data.maxLevel .. ')')
 
                 LFT.availableDungeons[data.code]:SetPoint("TOP", getglobal("LFTMain"), "TOP", -145, -165 - 20 * (dungeonIndex - offset))
                 LFT.availableDungeons[data.code].code = data.code
 
-                LFT.dungeons[dungeon].queued = false
-                getglobal('Dungeon_' .. data.code):SetChecked(false)
+                LFT.dungeons[dungeon].queued = data.queued
+                getglobal('Dungeon_' .. data.code):SetChecked(data.queued)
 
                 if LFT_TYPE == 2 then
                     LFT.dungeons[dungeon].queued = true
@@ -532,6 +518,9 @@ function LFT.fillAvailableDungeons(offset)
 
                 LFT.availableDungeons[data.code]:SetPoint("TOP", getglobal("LFTMain"), "TOP", -145, -165 - 20 * (dungeonIndex - offset))
                 LFT.availableDungeons[data.code].code = data.code
+
+--                LFT.dungeons[dungeon].queued = data.queued
+--                getglobal('Dungeon_' .. data.code):SetChecked(data.queued)
             end
         end
     end
@@ -544,7 +533,6 @@ end
 function DungeonListFrame_Update()
     local offset = FauxScrollFrame_GetOffset(getglobal('DungeonListScrollFrame'));
     LFT.fillAvailableDungeons(offset)
-    lfdebug('DungeonListFrame_Update')
 end
 
 function queueFor(name, status)
@@ -574,9 +562,12 @@ function LFT_Toggle()
         getglobal('LFTMain'):Hide()
     else
         LFT.checkLFTChannel()
-        LFT.fillAvailableDungeons()
+        if not LFT.findingGroup then
+            LFT.fillAvailableDungeons()
+        end
 
         getglobal('LFTMain'):Show()
+        DungeonListFrame_Update()
     end
 end
 
@@ -628,7 +619,6 @@ function findGroup()
 end
 
 function LFT.resetGroup()
-    lfdebug('reset call')
     LFT.group = {};
     LFT.oneGroupFull = false
     LFT.groupFullCode = ''
@@ -640,8 +630,8 @@ function LFT.resetGroup()
                 tank = tank,
                 healer = '',
                 dps1 = '',
-                dps2 = '', --''Holystrike',
-                dps3 = '', --''Holystrike'
+                dps2 = '',
+                dps3 = '',
             }
         end
     end
@@ -652,46 +642,32 @@ function LFT.addDps(dungeon, name, pseudo)
     if pseudo then ps = 'pseudo' end
     if LFT.group[dungeon].dps1 == '' then
         LFT.group[dungeon].dps1 = name
-        lfdebug('added ' .. ps .. ' dps1 = ' .. name)
         return true
     elseif LFT.group[dungeon].dps2 == '' then
         LFT.group[dungeon].dps2 = name
-        lfdebug('added ' .. ps .. ' dps2 = ' .. name)
         return true
     elseif LFT.group[dungeon].dps3 == '' then
         LFT.group[dungeon].dps3 = name
-        lfdebug('added ' .. ps .. ' dps3 = ' .. name)
         return true
     end
-    lfdebug('dps list full, didnt add ' .. name)
     return false --group full on dps
 end
 
 function LFT.checkGroupFull()
-    lfdebug('group full check')
+
     for dungeon, data in next, LFT.dungeons do
         if data.queued then
-
             if LFT.group[data.code].tank ~= '' and
                     LFT.group[data.code].healer ~= '' and
                     LFT.group[data.code].dps1 ~= '' and
                     LFT.group[data.code].dps2 ~= '' and
                     LFT.group[data.code].dps3 ~= '' then
-                lfdebug('group full for ' .. dungeon)
-                lfdebug(LFT.group[data.code].tank .. ' ' .. LFT.group[data.code].healer ..
-                        ' ' .. LFT.group[data.code].dps1 .. ' ' .. LFT.group[data.code].dps2 ..
-                        ' ' .. LFT.group[data.code].dps3)
 
                 LFT.oneGroupFull = true
                 LFT.group[data.code].full = true
 
                 return true, data.code, LFT.group[data.code].healer, LFT.group[data.code].dps1, LFT.group[data.code].dps2, LFT.group[data.code].dps3
             else
-                lfdebug('group not full ' .. data.code)
-                lfdebug(LFT.group[data.code].tank .. ', ' .. LFT.group[data.code].healer ..
-                        ', ' .. LFT.group[data.code].dps1 .. ', ' .. LFT.group[data.code].dps2 ..
-                        ', ' .. LFT.group[data.code].dps3 .. '.')
-
                 LFT.group[data.code].full = false
                 LFT.oneGroupFull = false
             end
@@ -847,13 +823,17 @@ function DungeonType_OnClick(a)
     LFT.fillAvailableDungeons()
 end
 
-function LFT_ShowTooltip(t)
-    GameTooltip:SetOwner(t, "ANCHOR_BOTTOMLEFT", 0, 0)
+function LFT_HideMinimap()
+    for i, f in LFT.minimapFrames do
+        LFT.minimapFrames[i]:Hide()
+    end
+    getglobal('LFTGroupStatus'):Hide()
+end
 
-    GameTooltip:AddLine('Looking For Turtles', 1, 1, 1)
+function LFT_ShowMinimap()
 
     if LFT.findingGroup then
-
+        local dungeonIndex = 0
         for dungeonCode, data in next, LFT.group do
             local tank = 0
             local healer = 0
@@ -865,17 +845,72 @@ function LFT_ShowTooltip(t)
             if data.dps3 ~= '' then dps = dps + 1 end
 
             local dungeon = LFT.dungeonFromCode(dungeonCode)
-            GameTooltip:AddLine(LFT.dungeonNameFromCode(dungeonCode) .. ' (T:' .. tank .. '/1 H:' .. healer .. '/1 D:' .. dps .. '/3)')
+            --            GameTooltip:AddLine(LFT.dungeonNameFromCode(dungeonCode) .. ' (T:' .. tank .. '/1 H:' .. healer .. '/1 D:' .. dps .. '/3)')
+
+            if not LFT.minimapFrames[dungeonCode] then
+                LFT.minimapFrames[dungeonCode] = CreateFrame('Frame', "LFTMinimap_" .. dungeonCode, UIParent, "LFTMinimapDungeonTemplate")
+            end
+
+            local background = ''
+            local dungeonName = 'unknown'
+            for d, data2 in next, LFT.dungeons do
+                if data2.code == dungeonCode then
+                    background = data2.background
+                    dungeonName = d
+                end
+            end
+
+            LFT.minimapFrames[dungeonCode]:Show()
+            LFT.minimapFrames[dungeonCode]:SetPoint("TOP", getglobal("LFTGroupStatus"), "TOP", 0, -25 - 32 * (dungeonIndex))
+            getglobal('LFTMinimap_' .. dungeonCode .. 'Background'):SetTexture('Interface\\addons\\LFT\\images\\background\\ui-lfg-background-' .. background)
+            getglobal('LFTMinimap_' .. dungeonCode .. 'DungeonName'):SetText(dungeonName)
+
+            getglobal('LFTMinimap_' .. dungeonCode .. 'NrTank'):SetText(tank .. '/1')
+            getglobal('LFTMinimap_' .. dungeonCode .. 'NrHealer'):SetText(healer .. '/1')
+            getglobal('LFTMinimap_' .. dungeonCode .. 'NrDamage'):SetText(dps .. '/3')
+
+            dungeonIndex = dungeonIndex + 1
         end
 
-        GameTooltip:AddLine(' ')
-        GameTooltip:AddLine('Time in Queue: ' .. SecondsToTime(time() - LFT.queueStartTime))
+        getglobal('LFTGroupStatus'):SetPoint("TOPRIGHT", getglobal("LFT_Minimap"), "BOTTOMLEFT", 8, 8)
+        getglobal('LFTGroupStatus'):SetHeight(dungeonIndex * 32 + 80)
+--        getglobal('LFTGroupStatusBackground'):SetHeight(getglobal('LFTGroupStatus'):GetHeight() -10)
 
+        getglobal('LFTGroupStatusTimeInQueue'):SetText('Time in Queue: ' .. SecondsToTime(time() - LFT.queueStartTime))
+        getglobal('LFTGroupStatus'):Show()
     else
-        GameTooltip:AddLine('Click to open')
     end
 
-    GameTooltip:Show()
+
+
+    --    GameTooltip:SetOwner(t, "ANCHOR_BOTTOMLEFT", 0, 0)
+    --
+    --    GameTooltip:AddLine('Looking For Turtles', 1, 1, 1)
+    --
+    --    if LFT.findingGroup then
+    --
+    --        for dungeonCode, data in next, LFT.group do
+    --            local tank = 0
+    --            local healer = 0
+    --            local dps = 0
+    --            if data.tank ~= '' then tank = tank + 1 end
+    --            if data.healer ~= '' or LFT_ROLE == 'healer' then healer = healer + 1 end
+    --            if data.dps1 ~= '' or LFT_ROLE == 'damage' then dps = dps + 1 end
+    --            if data.dps2 ~= '' then dps = dps + 1 end
+    --            if data.dps3 ~= '' then dps = dps + 1 end
+    --
+    --            local dungeon = LFT.dungeonFromCode(dungeonCode)
+    --            GameTooltip:AddLine(LFT.dungeonNameFromCode(dungeonCode) .. ' (T:' .. tank .. '/1 H:' .. healer .. '/1 D:' .. dps .. '/3)')
+    --        end
+    --
+    --        GameTooltip:AddLine(' ')
+    --        GameTooltip:AddLine('Time in Queue: ' .. SecondsToTime(time() - LFT.queueStartTime))
+    --
+    --    else
+    --        GameTooltip:AddLine('Click to open')
+    --    end
+    --
+    --    GameTooltip:Show()
 end
 
 function LFT.ver(ver)
