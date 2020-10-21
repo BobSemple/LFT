@@ -28,6 +28,28 @@
                 </FontString>
             </Layer>
         </Layers>
+        <Frames>
+            <Button name="$parent_Button" inherits="UIPanelButtonTemplate">
+                <NormalTexture/>
+                <PushedTexture/>
+                <HighlightTexture/>
+                <Size>
+                    <AbsDimension x="200" y="18"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="LEFT">
+                        <Offset>
+                            <AbsDimension x="16" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            queueForFromButton(this:GetName())
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
         <Scripts>
             <OnClick>
                     queueFor(this:GetName(), this:GetChecked())
@@ -44,33 +66,14 @@
 
     <Frame name="LFTMinimapDungeonTemplate" virtual="true">
         <Size>
-            <AbsDimension x="250" y="60"/>
+            <AbsDimension x="200" y="60"/>
         </Size>
-<!--        <Anchors>-->
-<!--            <Anchor point="TOPLEFT">-->
-<!--                <Offset>-->
-<!--                    <AbsDimension x="0" y="-20"/>-->
-<!--                </Offset>-->
-<!--            </Anchor>-->
-<!--        </Anchors>-->
-<!--        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"-->
-<!--                  tile="false">-->
-<!--            <BackgroundInsets>-->
-<!--                <AbsInset left="11" right="12" top="12" bottom="11"/>-->
-<!--            </BackgroundInsets>-->
-<!--            <TileSize>-->
-<!--                <AbsValue val="32"/>-->
-<!--            </TileSize>-->
-<!--            <EdgeSize>-->
-<!--                <AbsValue val="32"/>-->
-<!--            </EdgeSize>-->
-<!--        </Backdrop>-->
         <Layers>
             <Layer level="BORDER">
                 <Texture name="$parentBackground"
                          file="Interface\addons\LFT\images\background\ui-lfg-background-scarletmonastery">
                     <Size>
-                        <AbsDimension x="225" y="30"/>
+                        <AbsDimension x="175" y="30"/>
                     </Size>
                     <Anchors>
                         <Anchor point="TOP">
@@ -89,7 +92,7 @@
                     <Anchors>
                         <Anchor point="TOPLEFT">
                             <Offset>
-                                <AbsDimension x="119" y="-33"/>
+                                <AbsDimension x="75" y="-33"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -101,7 +104,7 @@
                     <Anchors>
                         <Anchor point="TOPLEFT">
                             <Offset>
-                                <AbsDimension x="159" y="-33"/>
+                                <AbsDimension x="115" y="-33"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -113,7 +116,7 @@
                     <Anchors>
                         <Anchor point="TOPLEFT">
                             <Offset>
-                                <AbsDimension x="199" y="-33"/>
+                                <AbsDimension x="155" y="-33"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -139,7 +142,7 @@
                     <Anchors>
                         <Anchor point="BOTTOM">
                             <Offset>
-                                <AbsDimension x="40" y="9"/>
+                                <AbsDimension x="20" y="9"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -151,7 +154,7 @@
                     <Anchors>
                         <Anchor point="BOTTOM">
                             <Offset>
-                                <AbsDimension x="80" y="9"/>
+                                <AbsDimension x="60" y="9"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -163,7 +166,7 @@
                     <Anchors>
                         <Anchor point="BOTTOM">
                             <Offset>
-                                <AbsDimension x="120" y="9"/>
+                                <AbsDimension x="100" y="9"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -173,8 +176,7 @@
 
     </Frame>
 
-    <Frame name="LFTGroupReady" hidden="true" toplevel="true"
-           parent="UIParent" enableMouse="true">
+    <Frame name="LFTGroupReady" hidden="true" parent="UIParent" enableMouse="true">
         <Size>
             <AbsDimension x="308" y="200"/>
         </Size>
@@ -200,9 +202,9 @@
 
         </Backdrop>
         <Layers>
-            <Layer level="BACKGROUND">
+            <Layer level="BORDER">
                 <Texture name="$parentBackground"
-                         file="Interface\addons\LFT\images\background\ui-lfg-background-scholomance">
+                         file="Interface\addons\LFT\images\background\ui-lfg-background-gnomeregan">
                     <Size>
                         <AbsDimension x="288" y="128"/>
                     </Size>
@@ -216,6 +218,20 @@
                 </Texture>
             </Layer>
             <Layer level="ARTWORK">
+                <Texture name="$parentArtMiddle" file="Interface\addons\LFT\images\dungeon_ready_middle">
+                    <Size>
+                        <AbsDimension x="512" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="10" y="-72"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
                 <Texture name="$parentSeparator" file="Interface\addons\LFT\images\ui-lfg-separator">
                     <Size>
                         <AbsDimension x="256" y="128"/>
@@ -240,20 +256,6 @@
                         </Anchor>
                     </Anchors>
                 </Texture>
-                <Texture name="$parentArtTop" file="Interface\addons\LFT\images\dungeon_ready_middle">
-                    <Size>
-                        <AbsDimension x="512" y="128"/>
-                    </Size>
-                    <Anchors>
-                        <Anchor point="TOPLEFT">
-                            <Offset>
-                                <AbsDimension x="12" y="-72"/>
-                            </Offset>
-                        </Anchor>
-                    </Anchors>
-                </Texture>
-            </Layer>
-            <Layer level="OVERLAY">
                 <Texture name="$parentRole" file="Interface\addons\LFT\images\tank2">
                     <Size>
                         <AbsDimension x="64" y="64"/>
@@ -261,7 +263,7 @@
                     <Anchors>
                         <Anchor point="TOP">
                             <Offset>
-                                <AbsDimension x="0" y="-77"/>
+                                <AbsDimension x="-2" y="-77"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -337,9 +339,209 @@
         </Frames>
     </Frame>
 
+    <Frame name="LFTRoleCheck" hidden="true" parent="UIParent" enableMouse="true">
+        <Size>
+            <AbsDimension x="250" y="180"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOP">
+                <Offset>
+                    <AbsDimension x="0" y="-150"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+                  edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+                  tile="false">
+            <BackgroundInsets>
+                <AbsInset left="11" right="12" top="12" bottom="11"/>
+            </BackgroundInsets>
+            <TileSize>
+                <AbsValue val="32"/>
+            </TileSize>
+            <EdgeSize>
+                <AbsValue val="32"/>
+            </EdgeSize>
+
+        </Backdrop>
+        <Layers>
+            <Layer level="BORDER">
+            </Layer>
+            <Layer level="ARTWORK">
+            </Layer>
+            <Layer level="OVERLAY">
+                <Texture name="$parentRoleTank" file="Interface\addons\LFT\images\tank2">
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="-70" y="-35"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentRoleHealer" file="Interface\addons\LFT\images\healer2">
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-35"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentRoleDamage" file="Interface\addons\LFT\images\damage2">
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="70" y="-35"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <FontString name="$parentGroupText" inherits="GameFontWhite" text="Confirm your role:">
+                    <Size>
+                        <AbsDimension x="100" y="44"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentQForText" inherits="GameFontNormalSmall" text="Queued for ">
+                    <Size>
+                        <AbsDimension x="250" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-110"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+
+            </Layer>
+        </Layers>
+        <Frames>
+
+            <CheckButton name="roleCheckTank">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="30" y="-85"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            LFTsetRole('tank', this:GetChecked(), true)
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+                <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+                <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+                <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+            </CheckButton>
+            <CheckButton name="roleCheckHealer">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="100" y="-85"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            LFTsetRole('healer', this:GetChecked(), true)
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+                <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+                <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+                <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+            </CheckButton>
+            <CheckButton name="roleCheckDamage">
+                <Size>
+                    <AbsDimension x="20" y="20"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPLEFT">
+                        <Offset>
+                            <AbsDimension x="170" y="-85"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            LFTsetRole('damage', this:GetChecked(), true)
+                    </OnClick>
+                </Scripts>
+                <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+                <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+                <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+                <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
+            </CheckButton>
+
+            <Button name="$parentAcceptRole" inherits="UIPanelButtonTemplate2" text="Accept">
+                <Size>
+                    <AbsDimension x="90" y="40"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="-50" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            acceptRole()
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parentDeclineRole" inherits="UIPanelButtonTemplate2" text="Decline">
+                <Size>
+                    <AbsDimension x="90" y="40"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="50" y="8"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            declineRole()
+                    </OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+    </Frame>
+
     <Frame name="LFTGroupStatus" hidden="false" parent="UIParent" enableMouse="true">
         <Size>
-            <AbsDimension x="250" y="200"/>
+            <AbsDimension x="200" y="200"/>
         </Size>
         <Backdrop edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
                   bgFile="Interface\DialogFrame\UI-DialogBox-Background"
@@ -355,22 +557,7 @@
             </EdgeSize>
         </Backdrop>
         <Layers>
-<!--            <Layer level="BACKGROUND">-->
-<!--                <Texture name="$parentBackground" file="Interface\DialogFrame\UI-DialogBox-Background" alphamode="ADD">-->
-<!--                    <Size x="240" y="190"/>-->
-<!--                    <Anchors>-->
-<!--                        <Anchor point="CENTER">-->
-<!--&lt;!&ndash;                            <Offset x="-3" y="3"/>&ndash;&gt;-->
-<!--                        </Anchor>-->
-<!--                    </Anchors>-->
-<!--                </Texture>-->
-<!--            </Layer>-->
-            <Layer level="ARTWORK">
-
-
-            </Layer>
             <Layer level="OVERLAY">
-
                 <FontString name="$parentTooltipTitle" inherits="GameFontWhite" text="Looking For Turtles"
                             justifyH="LEFT">
                     <Size>
@@ -757,7 +944,7 @@
                 <DisabledCheckedTexture file="Interface\Buttons\UI-CheckBox-Check-Disabled"/>
             </CheckButton>
 
-            <Button name="findGroupButton" inherits="UIPanelButtonTemplate2" text="Find Group">
+            <Button name="findGroupButton" hidden="true" inherits="UIPanelButtonTemplate2" text="Find Group">
                 <Size>
                     <AbsDimension x="104" y="21"/>
                 </Size>
@@ -771,6 +958,41 @@
                 <Scripts>
                     <OnClick>
                             findGroup()
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="findMoreButton" hidden="true" inherits="UIPanelButtonTemplate2" text="Find More">
+                <Size>
+                    <AbsDimension x="104" y="21"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="-8" y="79"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            findMore()
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+            <Button name="leaveQueueButton" hidden="true" inherits="UIPanelButtonTemplate2" text="Leave Queue">
+                <Size>
+                    <AbsDimension x="104" y="21"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOM">
+                        <Offset>
+                            <AbsDimension x="-8" y="79"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            leaveQueue()
                     </OnClick>
                 </Scripts>
             </Button>
@@ -792,6 +1014,5 @@
             </OnDragStop>
         </Scripts>
     </Frame>
-
 
 </Ui>
