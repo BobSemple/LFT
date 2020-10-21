@@ -1,7 +1,7 @@
 ## Interface: 11200
 ## Title: LFT = Looking For Turtles
 ## Author: Xerron/Er
-## Version: 1.0.0.0
+## Version: 0.0.1.1
 ## Notes: LFG Addon
 ## SavedVariables: LFT_ROLE, LFT_TYPE
 LFT.xml
