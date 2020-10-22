@@ -1,7 +1,7 @@
 ## Interface: 11200
-## Title: LFT = Looking For Turtles
+## Title: Looking For Turtles - |cffabd473LFT
 ## Author: Xerron/Er
-## Version: 0.0.1.1
-## Notes: LFG Addon
+## Version: 0.0.1.3
+## Notes: LFG Addon for Turtle WoW loaded
 ## SavedVariables: LFT_ROLE, LFT_TYPE
 LFT.xml
