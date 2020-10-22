@@ -73,7 +73,7 @@
                 <Texture name="$parentBackground"
                          file="Interface\addons\LFT\images\background\ui-lfg-background-scarletmonastery">
                     <Size>
-                        <AbsDimension x="175" y="30"/>
+                        <AbsDimension x="175" y="45"/>
                     </Size>
                     <Anchors>
                         <Anchor point="TOP">
@@ -92,7 +92,7 @@
                     <Anchors>
                         <Anchor point="TOPLEFT">
                             <Offset>
-                                <AbsDimension x="75" y="-33"/>
+                                <AbsDimension x="72" y="-43"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -104,7 +104,7 @@
                     <Anchors>
                         <Anchor point="TOPLEFT">
                             <Offset>
-                                <AbsDimension x="115" y="-33"/>
+                                <AbsDimension x="112" y="-43"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -116,7 +116,7 @@
                     <Anchors>
                         <Anchor point="TOPLEFT">
                             <Offset>
-                                <AbsDimension x="155" y="-33"/>
+                                <AbsDimension x="152" y="-43"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -130,7 +130,7 @@
                     <Anchors>
                         <Anchor point="TOPLEFT">
                             <Offset>
-                                <AbsDimension x="15" y="0"/>
+                                <AbsDimension x="16" y="-2"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -142,7 +142,7 @@
                     <Anchors>
                         <Anchor point="BOTTOM">
                             <Offset>
-                                <AbsDimension x="20" y="9"/>
+                                <AbsDimension x="17" y="-1"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -154,7 +154,7 @@
                     <Anchors>
                         <Anchor point="BOTTOM">
                             <Offset>
-                                <AbsDimension x="60" y="9"/>
+                                <AbsDimension x="57" y="-1"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -166,7 +166,7 @@
                     <Anchors>
                         <Anchor point="BOTTOM">
                             <Offset>
-                                <AbsDimension x="100" y="9"/>
+                                <AbsDimension x="97" y="-1"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -566,7 +566,7 @@
                     <Anchors>
                         <Anchor point="TOPLEFT">
                             <Offset>
-                                <AbsDimension x="15" y="-10"/>
+                                <AbsDimension x="16" y="-11"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -602,10 +602,6 @@
                 </Offset>
             </Anchor>
         </Anchors>
-
-        <!--        <Anchors>-->
-<!--            <Anchor point="CENTER"/>-->
-<!--        </Anchors>-->
         <Layers>
             <Layer level="BACKGROUND">
                 <Texture file="Interface\addons\LFT\images\ui-lfg-portrait">
@@ -780,7 +776,6 @@
                 </Scripts>
             </ScrollFrame>
 
-
             <Button name="LFT_Minimap" movable="true" parent="UIParent" enableMouse="true" toplevel="true"
                     frameStrata="LOW">
                 <Size x="33" y="33"/>
@@ -829,7 +824,7 @@
                     </OnEnter>
                     <OnLeave>
                             LFT_HideMinimap()
---                            GameTooltip:Hide()
+                            GameTooltip:Hide()
                     </OnLeave>
                     <OnMouseUp>
                             if arg1 == "LeftButton" then
@@ -881,7 +876,6 @@
                     </OnShow>
                 </Scripts>
             </Button>
-
 
             <CheckButton name="RoleTank">
                 <Size>
@@ -1011,6 +1005,7 @@
                     this:RegisterForDrag("LeftButton");
                     this:SetMovable(1);
                     this:SetUserPlaced(true);
+                    tinsert(UISpecialFrames, this:GetName());
             </OnLoad>
             <OnDragStart>
                     this:StartMoving();
@@ -1020,6 +1015,12 @@
                     this:StopMovingOrSizing();
                     this.isMoving = false;
             </OnDragStop>
+            <OnShow>
+                    PlaySound("igCharacterInfoOpen");
+            </OnShow>
+            <OnHide>
+                    PlaySound("igCharacterInfoClose");
+            </OnHide>
         </Scripts>
     </Frame>
 
