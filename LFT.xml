@@ -596,8 +596,16 @@
             <AbsDimension x="384" y="512"/>
         </Size>
         <Anchors>
-            <Anchor point="CENTER"/>
+            <Anchor point="TOPLEFT">
+                <Offset>
+                    <AbsDimension x="0" y="-104"/>
+                </Offset>
+            </Anchor>
         </Anchors>
+
+        <!--        <Anchors>-->
+<!--            <Anchor point="CENTER"/>-->
+<!--        </Anchors>-->
         <Layers>
             <Layer level="BACKGROUND">
                 <Texture file="Interface\addons\LFT\images\ui-lfg-portrait">
