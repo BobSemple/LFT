@@ -38,7 +38,7 @@ LFT.HEALER_TIME = 5 -- 5 .. 29
 LFT.DAMAGE_TIME = 5 -- 5 .. 29
 LFT.TIME_MARGIN = 30
 
-LFT.foundGroup = {}
+LFT.foundGroup = false
 LFT.inGroup = false
 LFT.isLeader = false
 LFT.LFMGroup = {}
@@ -51,6 +51,8 @@ local COLOR_HUNTER = '|cffabd473'
 local COLOR_YELLOW = '|cffffff00'
 local COLOR_WHITE = '|cffffffff'
 local COLOR_DISABLED = '|cff888888'
+
+-- channel join delayer
 
 local LFTChannelJoinDelay = CreateFrame("Frame")
 LFTChannelJoinDelay:Hide()
@@ -75,6 +77,8 @@ end)
 local LFTQueue = CreateFrame("Frame")
 LFTQueue:Hide()
 
+-- group invite timer
+
 local LFTInvite = CreateFrame("Frame")
 LFTInvite:Hide()
 LFTInvite:SetScript("OnShow", function()
@@ -83,7 +87,7 @@ LFTInvite:SetScript("OnShow", function()
 end)
 
 LFTInvite:SetScript("OnUpdate", function()
-    local plus = 1 --seconds
+    local plus = 0.5 --seconds
     local gt = GetTime() * 1000
     local st = (this.startTime + plus) * 1000
     if gt >= st then
@@ -96,17 +100,19 @@ LFTInvite:SetScript("OnUpdate", function()
         end
         if this.inviteIndex == 3 then
             InviteByName(LFT.group[LFT.groupFullCode].damage1)
-            LFTInvite:Hide() --dev
+            --            LFTInvite:Hide() --dev
         end
-        --        if this.inviteIndex == 4 then
-        --            InviteByName(LFT.group[LFT.groupFullCode].damage2)
-        --        end
-        --        if this.inviteIndex == 5 then
-        --            InviteByName(LFT.group[LFT.groupFullCode].damage3)
-        --            LFTInvite:Hide()
-        --        end
+        if this.inviteIndex == 4 then
+            InviteByName(LFT.group[LFT.groupFullCode].damage2)
+        end
+        if this.inviteIndex == 5 then
+            InviteByName(LFT.group[LFT.groupFullCode].damage3)
+            LFTInvite:Hide()
+        end
     end
 end)
+
+-- role check timer
 
 local LFTRoleCheck = CreateFrame("Frame")
 LFTRoleCheck:Hide()
@@ -128,6 +134,8 @@ LFTRoleCheck:SetScript("OnUpdate", function()
         LFTRoleCheck:Hide()
     end
 end)
+
+-- who counter timer
 
 local LFTWhoCounter = CreateFrame("Frame")
 LFTWhoCounter:Hide()
@@ -153,12 +161,13 @@ LFTWhoCounter:SetScript("OnUpdate", function()
     end
 end)
 
-
+-- communication
 
 local LFTComms = CreateFrame("Frame")
 LFTComms:Hide()
 LFTComms:RegisterEvent("CHAT_MSG_CHANNEL")
 LFTComms:RegisterEvent("CHAT_MSG_WHISPER")
+LFTComms:RegisterEvent("CHAT_MSG_CHANNEL_LEAVE")
 LFTComms:RegisterEvent("PARTY_INVITE_REQUEST")
 LFTComms:RegisterEvent("CHAT_MSG_ADDON")
 
@@ -257,6 +266,7 @@ LFTComms:SetScript("OnEvent", function()
                 else
                     getglobal('LFTRoleCheckQForText'):SetText(COLOR_WHITE .. "Queued for " .. COLOR_YELLOW .. LFT.dungeonNameFromCode(mCode))
                     getglobal('LFTRoleCheck'):Show()
+                    getglobal('LFTGroupReady'):Hide()
                     LFTRoleCheck:Show()
                 end
             end
@@ -289,6 +299,9 @@ LFTComms:SetScript("OnEvent", function()
                 LFT.DeclineGroupInvite()
             end
         end
+        if event == 'CHAT_MSG_CHANNEL_LEAVE' then
+            LFT.removePlayerFromVirtualParty(arg2, false) --unknown role
+        end
         if event == 'CHAT_MSG_WHISPER' and string.find(arg1, '[LFT]', 1, true) and --for lfm
                 string.find(arg1, ' (LFM)', 1, true) then
             LFT.onlyAcceptFrom = arg2
@@ -315,6 +328,7 @@ LFTComms:SetScript("OnEvent", function()
             getglobal('LFTGroupReadyMyRole'):SetText(LFT.ucFirst(LFT_ROLE))
             getglobal('LFTGroupReadyDungeonName'):SetText(dungeonName)
             getglobal('LFTGroupReady'):Show()
+            getglobal('LFTRoleCheck'):Hide()
 
             PlaySound("ReadyCheck")
 
@@ -342,19 +356,34 @@ LFTComms:SetScript("OnEvent", function()
                 local mRole = foundEx[2]
                 local mDungeon = foundEx[3]
 
-                if LFT_ROLE == mRole and not LFT.foundGroup[mDungeon] then
+                if LFT_ROLE == mRole and not LFT.foundGroup then
                     SendChatMessage('goingWith:' .. arg2 .. ':' .. mDungeon, "CHANNEL", DEFAULT_CHAT_FRAME.editBox.languageID, GetChannelName(LFT.channel))
-                    LFT.foundGroup[mDungeon] = true
+                    LFT.foundGroup = true
                 end
             end
 
-            if string.sub(arg1, 1, 10) == 'goingWith:' and LFT_ROLE == 'tank' then
+            if string.sub(arg1, 1, 10) == 'leftQueue:' then
+                local leftEx = string.split(arg1, ':')
+                local name = arg2
+                local mRole = leftEx[2]
+                LFT.removePlayerFromVirtualParty(name, mRole)
+            end
+
+            if string.sub(arg1, 1, 10) == 'goingWith:' and (LFT_ROLE == 'tank' or LFT.isLeader) then
+                -- todo, maybe remove tank role check here ?
+                -- if so, check remhealerordamage
                 local withEx = string.split(arg1, ':')
                 local leader = withEx[2]
                 local mDungeon = withEx[3]
 
-                if leader ~= me then
-                    LFT.remHealerOrDamage(mDungeon, arg2)
+                --check if im queued for mDungeon
+                for dungeon, _ in next, LFT.group do
+                    if dungeon == mDungon then
+                        if leader ~= me then
+                            LFT.remHealerOrDamage(mDungeon, arg2)
+                        end
+                    end
+                    -- otherwise, dont care
                 end
             end
 
@@ -442,6 +471,7 @@ LFTComms:SetScript("OnEvent", function()
                         getglobal('LFTGroupReadyMyRole'):SetText(LFT.ucFirst(LFT_ROLE))
                         getglobal('LFTGroupReadyDungeonName'):SetText(dungeonName)
                         getglobal('LFTGroupReady'):Show()
+                        getglobal('LFTRoleCheck'):Hide()
 
                         PlaySound("ReadyCheck")
 
@@ -454,6 +484,8 @@ LFTComms:SetScript("OnEvent", function()
         end
     end
 end)
+
+-- debug and print functions
 
 function lfprint(a)
     if a == nil then
@@ -492,6 +524,9 @@ LFT:SetScript("OnEvent", function()
         if event == "ADDON_LOADED" and arg1 == 'LFT' then
             LFT.init()
         end
+        --        if event == "PLAYER_LEAVING_WORLD" then
+        --            leaveQueue()
+        --        end
         if event == "PLAYER_ENTERING_WORLD" then
             LFT.level = UnitLevel('player')
             LFT.sendMyVersion()
@@ -738,11 +773,11 @@ function LFT.GetPossibleRoles()
     return 'damage'
 end
 
-function LFT.getAvailableDungeons(level, type)
+function LFT.getAvailableDungeons(level, type, mine)
     if level == 0 then return {} end
     local dungeons = {}
     for dungeon, data in next, LFT.dungeons do
-        if level >= data.minLevel and level <= data.maxLevel and type ~= 3 then
+        if level >= data.minLevel and (level <= data.maxLevel or (not mine)) and type ~= 3 then
             dungeons[data.code] = true
             --            lfdebug('level ' .. level .. ' dungeon = true = ' .. data.code)
         end
@@ -778,17 +813,17 @@ function LFT.fillAvailableDungeons(offset)
         local party = {
             [0] = {
                 level = LFT.level,
-                dungeons = LFT.getAvailableDungeons(LFT.level, LFT_TYPE)
+                dungeons = LFT.getAvailableDungeons(LFT.level, LFT_TYPE, true)
             }
         }
         for i = 1, 4 do
             party[i] = {
                 level = UnitLevel('party' .. i),
-                dungeons = LFT.getAvailableDungeons(UnitLevel('party' .. i), LFT_TYPE)
+                dungeons = LFT.getAvailableDungeons(UnitLevel('party' .. i), LFT_TYPE, false)
             }
         end
 
-        for dungeonCode in next, LFT.getAvailableDungeons(LFT.level, LFT_TYPE) do
+        for dungeonCode in next, LFT.getAvailableDungeons(LFT.level, LFT_TYPE, true) do
             local canAdd = false
             for i = 1, 4 do
                 for code in next, party[i].dungeons do
@@ -915,7 +950,7 @@ function LFT.resetGroup()
     end
     LFT.acceptNextInvite = false
     LFT.onlyAcceptFrom = ''
-    LFT.foundGroup = {}
+    LFT.foundGroup = false
 
     LFT.isLeader = LFT.playerIsPartyLeader()
 
@@ -926,7 +961,6 @@ function LFT.resetGroup()
         if data.queued then
             local tank = ''
             if LFT_ROLE == 'tank' then tank = me end
-            LFT.foundGroup[data.code] = false
             LFT.group[data.code] = {
                 tank = tank,
                 healer = '',
@@ -967,6 +1001,9 @@ function LFT.addHealer(dungeon, name, faux)
 end
 
 function LFT.remHealerOrDamage(dungeon, name)
+    lfdebug('rem healer or damage, name : ' .. name)
+    lfdebug('dungeon : ')
+    lfdebug(dungeon)
     if LFT.group[dungeon].healer == name then
         LFT.group[dungeon].healer = ''
         --        lfdebug('removed ' .. name .. ' from my ' .. dungeon .. ' group')
@@ -1015,9 +1052,9 @@ function LFT.checkGroupFull()
         if data.queued then
             if LFT.group[data.code].tank ~= '' and
                     LFT.group[data.code].healer ~= '' and
-                    LFT.group[data.code].damage1 ~= '' then --dev
-                --                    LFT.group[data.code].damage2 ~= '' and
-                --                    LFT.group[data.code].damage3 ~= '' then
+                    LFT.group[data.code].damage1 ~= '' and --dev
+                    LFT.group[data.code].damage2 ~= '' and
+                    LFT.group[data.code].damage3 ~= '' then
 
                 LFT.oneGroupFull = true
                 LFT.group[data.code].full = true
@@ -1174,6 +1211,9 @@ function LFT.fixMainButton()
         if GetNumPartyMembers() < 4 and LFT.isLeader and queues > 0 then
             lfmButton:Enable()
         end
+        if GetNumPartyMembers() == 4 and LFT.isLeader then
+            lfmButton:Disable()
+        end
         if not LFT.isLeader then
             lfmButton:Disable()
             LFT.disableDungeonCheckbuttons()
@@ -1191,6 +1231,10 @@ function LFT.fixMainButton()
         lfgButton:Hide()
         lfmButton:Hide()
     end
+end
+
+function LFT.sendCancelMeMessage()
+    SendChatMessage('leftQueue:' .. LFT_ROLE, "CHANNEL", DEFAULT_CHAT_FRAME.editBox.languageID, GetChannelName(LFT.channel))
 end
 
 function LFT.sendLFMessage()
@@ -1249,9 +1293,9 @@ function LFT.checkLFMGroupReady()
 
     if LFT.group[LFT.LFMDungeonCode].tank ~= '' and
             LFT.group[LFT.LFMDungeonCode].healer ~= '' and
-            LFT.group[LFT.LFMDungeonCode].damage1 ~= '' then --dev
-        --                    LFT.group[LFT.LFMDungeonCode].damage2 ~= '' and
-        --                    LFT.group[LFT.LFMDungeonCode].damage3 ~= '' then
+            LFT.group[LFT.LFMDungeonCode].damage1 ~= '' and --then --dev
+            LFT.group[LFT.LFMDungeonCode].damage2 ~= '' and
+            LFT.group[LFT.LFMDungeonCode].damage3 ~= '' then
         return true
     end
     return false
@@ -1285,6 +1329,27 @@ function LFT.sendMyVersion()
     SendAddonMessage('LFT', "LFTVersion:" .. addonVer, "GUILD")
     SendAddonMessage('LFT', "LFTVersion:" .. addonVer, "RAID")
     SendAddonMessage('LFT', "LFTVersion:" .. addonVer, "BATTLEGROUND")
+end
+
+function LFT.removePlayerFromVirtualParty(name, mRole)
+    if not mRole then mRole = 'unknown' end
+    for dungeonCode, data in next, LFT.group do
+        if data.tank == name and (mRole == 'tank' or mRole == 'unknown') then LFT.group[dungeonCode].tank = ''
+            lfdebug(name .. ' role: ' .. mRole .. ' removed from my virtual group.')
+        end
+        if data.healer == name and (mRole == 'healer' or mRole == 'unknown') then LFT.group[dungeonCode].healer = ''
+            lfdebug(name .. ' role: ' .. mRole .. ' removed from my virtual group.')
+        end
+        if data.damage1 == name and (mRole == 'damage' or mRole == 'unknown') then LFT.group[dungeonCode].damage1 = ''
+            lfdebug(name .. ' role: ' .. mRole .. ' removed from my virtual group.')
+        end
+        if data.damage2 == name and (mRole == 'damage' or mRole == 'unknown') then LFT.group[dungeonCode].damage2 = ''
+            lfdebug(name .. ' role: ' .. mRole .. ' removed from my virtual group.')
+        end
+        if data.damage3 == name and (mRole == 'damage' or mRole == 'unknown') then LFT.group[dungeonCode].damage3 = ''
+            lfdebug(name .. ' role: ' .. mRole .. ' removed from my virtual group.')
+        end
+    end
 end
 
 -- XML called methods
@@ -1564,7 +1629,10 @@ function leaveQueue()
             if LFT.inGroup then
                 LFT.enableDungeonCheckbuttons()
                 LFT.disableDungeonCheckbuttons(data.code)
-                lfprint('Your group has left the queue for |cff69ccf0' .. LFT.dungeonNameFromCode(data.code))
+
+                lfprint('You have left the queue for |cff69ccf0' .. LFT.dungeonNameFromCode(data.code))
+                --todo needs fix
+                --lfprint('Your group has left the queue for |cff69ccf0' .. LFT.dungeonNameFromCode(data.code))
             else
                 lfprint('You have left the queue for |cff69ccf0' .. LFT.dungeonNameFromCode(data.code))
             end
@@ -1584,6 +1652,8 @@ function leaveQueue()
     if LFT.isLeader then
         SendAddonMessage("LFT", "leaveQueue:now", "PARTY")
     end
+
+    LFT.sendCancelMeMessage()
 
     LFT.fixMainButton()
 end
