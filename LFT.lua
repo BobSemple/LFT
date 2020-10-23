@@ -413,7 +413,7 @@ LFTComms:SetScript("OnEvent", function()
                 local name = foundEx[4]
 
                 if LFT_ROLE == mRole and not LFT.foundGroup and name == me then
-                    SendChatMessage('goingWith:' .. arg2 .. ':' .. mDungeon, "CHANNEL", DEFAULT_CHAT_FRAME.editBox.languageID, GetChannelName(LFT.channel))
+                    SendChatMessage('goingWith:' .. arg2 .. ':' .. mDungeon .. ':' .. LFT_ROLE, "CHANNEL", DEFAULT_CHAT_FRAME.editBox.languageID, GetChannelName(LFT.channel))
                     LFT.foundGroup = true
                 end
             end
@@ -430,6 +430,7 @@ LFTComms:SetScript("OnEvent", function()
                 local withEx = string.split(arg1, ':')
                 local leader = withEx[2]
                 local mDungeon = withEx[3]
+                local mRole = withEx[4]
                 --                lfdebug('should remove ' .. arg2 .. ' from my group ' .. mDungeon)
                 --check if im queued for mDungeon
                 for dungeon, _ in next, LFT.group do
@@ -440,6 +441,14 @@ LFTComms:SetScript("OnEvent", function()
                         end
                     end
                     -- otherwise, dont care
+                end
+
+                -- lfm leader should invite this guy now
+                if LFT.isLeader and leader == me then
+                    if LFT.isNeededInLFMGroup(mRole, arg2, mDungeon) then
+                        LFT.inviteInLFMGroup(arg2)
+                    end
+                    return true
                 end
             end
 
@@ -453,12 +462,12 @@ LFTComms:SetScript("OnEvent", function()
                     if data.queued and data.code == mDungeonCode then
 
                         -- LFM, leader found someone
-                        if LFT.isLeader then
-                            if LFT.isNeededInLFMGroup(mRole, arg2, mDungeonCode) then
-                                LFT.inviteInLFMGroup(arg2)
-                            end
-                            return true
-                        end
+--                        if LFT.isLeader then
+--                            if LFT.isNeededInLFMGroup(mRole, arg2, mDungeonCode) then
+--                                LFT.inviteInLFMGroup(arg2)
+--                            end
+--                            return true
+--                        end
 
 
                         if LFT_ROLE == 'tank' then
@@ -567,6 +576,7 @@ LFT:SetScript("OnEvent", function()
 
             if someoneJoined then
                 --todo - check someone's level if it comes from manual!
+                -- limit dungeons and notify if new player cant join current dungeon
                 --check if its from the queue or manual
                 if LFT.findingMore and LFT.isLeader then
 
@@ -811,7 +821,7 @@ LFTQueue:SetScript("OnUpdate", function()
 
         if (cSecond == LFT.FULLCHECK_TIME or cSecond == LFT.FULLCHECK_TIME + LFT.TIME_MARGIN) and LFT_ROLE == 'tank' and this.lastTime.checkGroupFull ~= time() then
             if not LFT.inGroup then
-
+                lfdebug('==== check group full --')
                 local groupFull, code, healer, damage1, damage2, damage3 = LFT.checkGroupFull()
 
                 if groupFull then
