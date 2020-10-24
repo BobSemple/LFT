@@ -314,6 +314,7 @@ LFTComms:SetScript("OnEvent", function()
                 LFT.weInQueue(queueEx[2])
             end
             if string.sub(arg2, 1, 10) == 'roleCheck:' then
+                PlaySoundFile("Interface\\AddOns\\LFT\\sound\\lfg_rolecheck.ogg");
                 lfprint('A role check has been initiated. Your group will be queued when all members have selected a role.')
                 UIErrorsFrame:AddMessage("|cff69ccf0[LFT] |cffffff00A role check has been initiated. Your group will be queued when all members have selected a role.")
 
