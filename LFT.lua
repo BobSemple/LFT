@@ -2552,7 +2552,7 @@ LFT.bosses = {
         'Lord Serpentis',
         'Verdan the Everliving',
         'Mutanus the Devourer',
-        'Deviate Faerie Dragon'
+        'Deviate Faerie Dragon' --rare
     },
     ['dm'] = {
         'Rhahk\'zor',
@@ -2570,7 +2570,7 @@ LFT.bosses = {
         'Fenrus the Devourer',
         'Odo the Blindwatcher',
         'Archmage Arugal',
-        'Deathsworn Captain',
+        'Deathsworn Captain', --rare
         'Commander Springvale',
         'Wolf Master Nandos',
         'Rethilgore'
@@ -2589,7 +2589,7 @@ LFT.bosses = {
         'Targorr the Dread',
         'Kam Deepfury',
         'Hamhock',
-        'Bruegal Ironknuckle',
+        'Bruegal Ironknuckle', --rare
         'Bazil Thredd',
         'Dextren Ward'
     },
@@ -2598,7 +2598,7 @@ LFT.bosses = {
         'Grubbis',
         'Crowd Pummeler 9-60',
         'Electrocutioner 6000',
-        'Dark Iron Ambassador',
+        'Dark Iron Ambassador', --rare
         'Mekgineer Thermaplugg'
     },
     ['rfk'] = {
@@ -2608,15 +2608,15 @@ LFT.bosses = {
         'Roogug',
         'Death Speaker Jargba',
         'Overlord Ramtusk',
-        'Blind Hunter',
-        'Earthcaller Halmgar'
+        'Blind Hunter', --rare
+        'Earthcaller Halmgar' --rare
     },
     ['smgy'] = {
         'Interrogator Vishas',
         'Bloodmage Thalnos',
-        'Azshir the Sleepless',
-        'Fallen Champion',
-        'Ironspire'
+        'Azshir the Sleepless', --rare
+        'Fallen Champion', --rare
+        'Ironspire' --rare
     },
     ['smarmory'] = {
         'Herod'
@@ -2658,10 +2658,10 @@ LFT.bosses = {
         'Sergeant Bly',
         'Ruuzlu',
         'Hydromancer Velratha',
-        'Zerillis',
+        'Zerillis', --rare
         'Nekrum Gutchewer',
         'Shadowpriest Sezz\'ziz',
-        'Dustwraith',
+        'Dustwraith', --rare
         'Gahz\'rilla',
         'Chief Ukorz Sandscalp'
     },
@@ -2674,7 +2674,7 @@ LFT.bosses = {
         'Rotgrip',
         'Princess Theradras',
         'Celebras the Cursed',
-        'Meshlok the Harvester'
+        'Meshlok the Harvester' --rare
     },
     ['st'] = {
         'Hazzas',
@@ -2701,7 +2701,7 @@ LFT.bosses = {
         'Ribbly Screwspigot',
         'Fineous Darkvire',
         'Emperor Dagran Thaurissan',
-        'Panzor the Invincible',
+        'Panzor the Invincible', --rare
         'Phalanx',
         'Lord Incendius',
         'Warder Stilgiss',
@@ -2711,32 +2711,33 @@ LFT.bosses = {
         'Ambassador Flamelash',
         'Magmus',
         'Princess Moira Bronzebeard',
-        'Gorosh the Dervish',
-        'Grizzle',
-        'Eviscerator',
-        'Ok\'thor the Breaker',
-        'Anub\'shiah',
-        'Hedrum the Creeper'
+        'Gorosh the Dervish', --summoned
+        'Grizzle', --summoned
+        'Eviscerator', --summoned
+        'Ok\'thor the Breaker', --summoned
+        'Anub\'shiah', --summoned
+        'Hedrum the Creeper' --summoned
     },
     ['lbrs'] = {
         'Mother Smolderweb',
-        'Bannok Grimaxe',
-        'Crystal Fang',
-        'Ghok Bashguud',
-        'Spirestone Butcher',
-        'Burning Felguard',
-        'Spirestone Battle Lord',
-        'Spirestone Lord Magus',
+        'Bannok Grimaxe', --rare
+        'Crystal Fang', --rare
+        'Ghok Bashguud', --rare
+        'Spirestone Butcher', --rare
+        'Burning Felguard', --rare
+        'Spirestone Battle Lord', --rare
+        'Spirestone Lord Magus', --rare
         'Highlord Omokk',
-        'Urok Doomhowl',
+        'Urok Doomhowl', --summoned
         'Quartermaster Zigris',
         'Halycon',
         'Gizrul the Slavener',
         'War Master Voone',
-        'Overlord Wyrmthalak'
+        'Overlord Wyrmthalak',
+        'Mor Grayhoof' --summoned 
     },
     ['ubrs'] = {
-        'Jed Runewatcher',
+        'Jed Runewatcher', --rare
         'Gyth',
         'Warchief Rend Blackhand',
         'Pyroguard Emberseer',
@@ -2744,7 +2745,7 @@ LFT.bosses = {
         'Goraluk Anvilcrack',
         'The Beast',
         'General Drakkisath',
-        'Lord Valthalak'
+        'Lord Valthalak' --summoned
     },
     ['dme'] = {
         'Pusilin',
@@ -2752,6 +2753,7 @@ LFT.bosses = {
         'Hydrospawn',
         'Lethtendris',
         'Alzzin the Wildshaper',
+        'Isalien' --summoned
     },
     ['dmn'] = {
         'Guard Mol\'dar',
@@ -2769,7 +2771,7 @@ LFT.bosses = {
         'Immol\'thar',
         'Prince Tortheldrin',
         --        'Tsu\'zee', --rare
-        --        'Lord Hel\'nurath' --rare
+        --        'Lord Hel\'nurath'  --summoned
     },
     ['scholo'] = {
         'Marduk Blackpool', --optional
@@ -2786,7 +2788,8 @@ LFT.bosses = {
         'Vectus', --optional
         'Ras Frostwhisper',
         'Lady Illucia Barov',
-        'Lord Alexei Barov'
+        'Lord Alexei Barov',
+        'Kormok' --summoned
     },
     ['stratlive'] = {
         'Stratholme Courier',
@@ -2797,6 +2800,8 @@ LFT.bosses = {
         'Archivist Galford',
         'Malor the Zealous',
         'Hearthsinger Forresten',
+        'Sothos', --summoned
+        'Jarien', --summoned
         --        'Skul', -- rare
         --        'Postmaster Malown' --summon
     },
