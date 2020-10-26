@@ -87,36 +87,49 @@
             <Layer level="ARTWORK">
                 <Texture name="$parentReadyIconTank" file="Interface\addons\LFT\images\ready_tank">
                     <Size>
-                        <AbsDimension x="20" y="20"/>
+                        <AbsDimension x="16" y="16"/>
                     </Size>
                     <Anchors>
                         <Anchor point="TOPLEFT">
                             <Offset>
-                                <AbsDimension x="72" y="-43"/>
+                                <AbsDimension x="68" y="-43"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </Texture>
                 <Texture name="$parentReadyIconHealer" file="Interface\addons\LFT\images\ready_healer">
                     <Size>
-                        <AbsDimension x="18" y="18"/>
+                        <AbsDimension x="16" y="16"/>
                     </Size>
                     <Anchors>
                         <Anchor point="TOPLEFT">
                             <Offset>
-                                <AbsDimension x="112" y="-43"/>
+                                <AbsDimension x="108" y="-43"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </Texture>
                 <Texture name="$parentReadyIconDamage" file="Interface\addons\LFT\images\ready_damage">
                     <Size>
-                        <AbsDimension x="18" y="18"/>
+                        <AbsDimension x="16" y="16"/>
                     </Size>
                     <Anchors>
                         <Anchor point="TOPLEFT">
                             <Offset>
-                                <AbsDimension x="152" y="-43"/>
+                                <AbsDimension x="148" y="-43"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+
+                <Texture name="$parentMyRole" file="Interface\addons\LFT\images\ready_damage">
+                    <Size>
+                        <AbsDimension x="16" y="16"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPRIGHT">
+                            <Offset>
+                                <AbsDimension x="-12" y="-16"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -135,45 +148,114 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parentNrTank" inherits="GameFontNormalSmall" text="1/1" justifyH="LEFT">
+                <FontString name="$parentNrTank" inherits="GameFontNormal" text="1/1" justifyH="LEFT">
                     <Size>
                         <AbsDimension x="65" y="24"/>
                     </Size>
                     <Anchors>
                         <Anchor point="BOTTOM">
                             <Offset>
-                                <AbsDimension x="17" y="-1"/>
+                                <AbsDimension x="18" y="-1"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parentNrHealer" inherits="GameFontNormalSmall" text="1/1" justifyH="LEFT">
+                <FontString name="$parentNrHealer" inherits="GameFontNormal" text="1/1" justifyH="LEFT">
                     <Size>
                         <AbsDimension x="65" y="24"/>
                     </Size>
                     <Anchors>
                         <Anchor point="BOTTOM">
                             <Offset>
-                                <AbsDimension x="57" y="-1"/>
+                                <AbsDimension x="58" y="-1"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
-                <FontString name="$parentNrDamage" inherits="GameFontNormalSmall" text="3/3" justifyH="LEFT">
+                <FontString name="$parentNrDamage" inherits="GameFontNormal" text="3/3" justifyH="LEFT">
                     <Size>
                         <AbsDimension x="65" y="24"/>
                     </Size>
                     <Anchors>
                         <Anchor point="BOTTOM">
                             <Offset>
-                                <AbsDimension x="97" y="-1"/>
+                                <AbsDimension x="98" y="-1"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
                 </FontString>
             </Layer>
         </Layers>
+    </Frame>
 
+    <Frame name="LFTObjectiveBossTemplate" virtual="true">
+        <Size>
+            <AbsDimension x="250" y="20"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPLEFT">
+                <Offset>
+                    <AbsDimension x="0" y="0"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="$parentObjectiveComplete" file="Interface\addons\LFT\images\objective_1">
+                    <Size>
+                        <AbsDimension x="16" y="16"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-7" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentObjectivePending" file="Interface\addons\LFT\images\objective_0">
+                    <Size>
+                        <AbsDimension x="16" y="16"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-7" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+<!--            </Layer>-->
+<!--            <Layer level="OVERLAY">-->
+                <FontString name="$parentObjective" inherits="GameFontWhite" text="1/1 Houndmaster Asshole Defeated"
+                            justifyH="LEFT">
+                    <Size>
+                        <AbsDimension x="250" y="24"/>
+                    </Size>
+                    <Color r="1" g="1" b="1" a="1"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="11" y="4"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+
+                <Texture name="$parentSwoosh" file="Interface\addons\LFT\images\objective_complete_swoosh" alphaMode="ADD">
+                    <Size>
+                        <AbsDimension x="256" y="32"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="120" y="5"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
     </Frame>
 
     <Frame name="LFTGroupReady" hidden="true" parent="UIParent" enableMouse="true">
@@ -239,7 +321,7 @@
                     <Anchors>
                         <Anchor point="TOP">
                             <Offset>
-                                <AbsDimension x="40" y="-35"/>
+                                <AbsDimension x="40" y="-26"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -275,7 +357,7 @@
                     <Anchors>
                         <Anchor point="TOP">
                             <Offset>
-                                <AbsDimension x="0" y="-5"/>
+                                <AbsDimension x="0" y="-3"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -287,7 +369,19 @@
                     <Anchors>
                         <Anchor point="TOP">
                             <Offset>
-                                <AbsDimension x="0" y="-44"/>
+                                <AbsDimension x="0" y="-37"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentObjectivesCompleted" inherits="GameFontNormal" text="Bosses Defeated">
+                    <Size>
+                        <AbsDimension x="150" y="24"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-56"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -321,18 +415,35 @@
         <Frames>
             <Button name="$parentAwesome" inherits="UIPanelButtonTemplate2" text="Let's do this!">
                 <Size>
-                    <AbsDimension x="150" y="40"/>
+                    <AbsDimension x="120" y="40"/>
                 </Size>
                 <Anchors>
-                    <Anchor point="BOTTOM">
+                    <Anchor point="BOTTOMLEFT">
                         <Offset>
-                            <AbsDimension x="0" y="20"/>
+                            <AbsDimension x="25" y="20"/>
                         </Offset>
                     </Anchor>
                 </Anchors>
                 <Scripts>
                     <OnClick>
                             sayReady()
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parentNotCool" inherits="UIPanelButtonTemplate2" text="Leave Queue">
+                <Size>
+                    <AbsDimension x="120" y="40"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT">
+                        <Offset>
+                            <AbsDimension x="-25" y="20"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            sayNotReady()
                     </OnClick>
                 </Scripts>
             </Button>
@@ -539,6 +650,426 @@
         </Frames>
     </Frame>
 
+    <Frame name="LFTDungeonComplete" hidden="true" parent="UIParent">
+        <Size>
+            <AbsDimension x="512" y="128"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER">
+                <Offset>
+                    <AbsDimension x="0" y="-100"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Backgrou2nd"
+                  tile="false">
+        </Backdrop>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture name="LFTDungeonCompleteIcon" file="Interface\addons\LFT\images\icon\lfgicon-aqtemple">
+                    <Size>
+                        <AbsDimension x="58" y="58"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT">
+                            <Offset>
+                                <AbsDimension x="100" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture name="LFTDungeonCompleteFrame" file="Interface\addons\LFT\images\dungeon_complete\dungeon_complete_25">
+                    <Size>
+                        <AbsDimension x="512" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="CENTER">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString name="$parentText" inherits="GameFontHighlightSmall" text="Dungeon complete!">
+                    <Size>
+                        <AbsDimension x="100" y="44"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="CENTER">
+                            <Offset>
+                                <AbsDimension x="15" y="10"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentDungeonName" inherits="GameFontNormalLarge" text="Scarlet Monastery Something">
+                    <Size>
+                        <AbsDimension x="250" y="44"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="CENTER">
+                            <Offset>
+                                <AbsDimension x="25" y="-6"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+        </Frames>
+    </Frame>
+
+    <Frame name="LFTReadyStatus" hidden="true" parent="UIParent" enableMouse="true">
+        <Size>
+            <AbsDimension x="360" y="140"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOP">
+                <Offset>
+                    <AbsDimension x="0" y="-150"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+                  edgeFile="Interface\DialogFrame\UI-DialogBox-Border"
+                  tile="false">
+            <BackgroundInsets>
+                <AbsInset left="11" right="12" top="12" bottom="11"/>
+            </BackgroundInsets>
+            <TileSize>
+                <AbsValue val="32"/>
+            </TileSize>
+            <EdgeSize>
+                <AbsValue val="32"/>
+            </EdgeSize>
+        </Backdrop>
+        <Layers>
+            <Layer level="BORDER">
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture name="LFTReadyStatusReadyCheckTank" file="Interface\addons\LFT\images\tank2">
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="20" y="-40"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="LFTReadyStatusReadyCheckHealer" file="Interface\addons\LFT\images\healer2">
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="LFTReadyStatusReadyCheckTank" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="LFTReadyStatusReadyCheckDamage1" file="Interface\addons\LFT\images\damage2">
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="LFTReadyStatusReadyCheckHealer" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="LFTReadyStatusReadyCheckDamage2" file="Interface\addons\LFT\images\damage2">
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="LFTReadyStatusReadyCheckDamage1" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="LFTReadyStatusReadyCheckDamage3" file="Interface\addons\LFT\images\damage2">
+                    <Size>
+                        <AbsDimension x="64" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="LFTReadyStatusReadyCheckDamage2" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <Texture name="LFTReadyStatusReadyTank" file="Interface\addons\LFT\images\readycheck-waiting">
+                    <Size>
+                        <AbsDimension x="42" y="42"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="20" y="-70"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="LFTReadyStatusReadyHealer" file="Interface\addons\LFT\images\readycheck-waiting">
+                    <Size>
+                        <AbsDimension x="42" y="42"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="LFTReadyStatusReadyTank" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="22" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="LFTReadyStatusReadyDamage1" file="Interface\addons\LFT\images\readycheck-waiting">
+                    <Size>
+                        <AbsDimension x="42" y="42"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="LFTReadyStatusReadyHealer" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="22" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="LFTReadyStatusReadyDamage2" file="Interface\addons\LFT\images\readycheck-waiting">
+                    <Size>
+                        <AbsDimension x="42" y="42"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="LFTReadyStatusReadyDamage1" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="22" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="LFTReadyStatusReadyDamage3" file="Interface\addons\LFT\images\readycheck-waiting">
+                    <Size>
+                        <AbsDimension x="42" y="42"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="LEFT" relativeTo="LFTReadyStatusReadyDamage2" relativePoint="RIGHT">
+                            <Offset>
+                                <AbsDimension x="22" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <FontString name="$parentGroupText" inherits="GameFontWhite" text="Ready check">
+                    <Size>
+                        <AbsDimension x="100" y="44"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="FTReadyStatusCloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="0" y="0"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+        </Frames>
+    </Frame>
+
+    <Frame name="LFTDungeonStatus" hidden="true" toplevel="false" parent="UIParent" movable="true" enableMouse="true">
+        <Size>
+            <AbsDimension x="250" y="120"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOPRIGHT">
+                <Offset>
+                    <AbsDimension x="-100" y="-200"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+        <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Backgrou2nd"
+                  tile="false">
+            <BackgroundInsets>
+                <AbsInset left="11" right="12" top="12" bottom="11"/>
+            </BackgroundInsets>
+            <TileSize>
+                <AbsValue val="32"/>
+            </TileSize>
+            <EdgeSize>
+                <AbsValue val="32"/>
+            </EdgeSize>
+
+        </Backdrop>
+        <Layers>
+            <Layer level="BORDER">
+                <Texture name="$parentTitleBackground" file="Interface\addons\LFT\images\objective_title">
+                    <Size>
+                        <AbsDimension x="512" y="64"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+                <Texture name="$parentDungeonTextBackground" file="Interface\addons\LFT\images\objective_dungeon">
+                    <Size>
+                        <AbsDimension x="256" y="128"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="0" y="-20"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+            </Layer>
+            <Layer level="OVERLAY">
+                <FontString name="$parentDungeonTitle" inherits="GameFontNormalLarge" text="Dungeon">
+                    <Size>
+                        <AbsDimension x="100" y="44"/>
+                    </Size>
+                    <Color r="0.96" g="0.81" b="0.19" a="0.9"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-3" y="-11"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentDungeonName" text="Scarlet Monastery"
+                            font="Interface\addons\LFT\fonts\MORPHEUS.TTF">
+                    <Color r="0.86" g="0.81" b="0.69" a=".9"/>
+                    <FontHeight val="18"/>
+                    <Shadow>
+                        <Color a="0.9" r="0.2" g="0.2" b="0.2"/>
+                        <Offset x="1" y="-1"/>
+                    </Shadow>
+                    <Size>
+                        <AbsDimension x="200" y="50"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP">
+                            <Offset>
+                                <AbsDimension x="-35" y="-58"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <Frames>
+
+            <Button name="$parentCollapseButton" hidden="false" inherits="UIPanelButtonTemplate" text="">
+                <NormalTexture file="Interface\addons\LFT\images\objective_collapse"/>
+                <PushedTexture file="Interface\addons\LFT\images\objective_collapse_pushed"/>
+                <Size>
+                    <AbsDimension x="16" y="16"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-5" y="-25"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            toggleDungeonStatus_OnClick()
+                    </OnClick>
+                </Scripts>
+            </Button>
+            <Button name="$parentExpandButton" hidden="true" inherits="UIPanelButtonTemplate" text="">
+                <NormalTexture file="Interface\addons\LFT\images\objective_expand"/>
+                <PushedTexture file="Interface\addons\LFT\images\objective_expand_pushed"/>
+                <Size>
+                    <AbsDimension x="16" y="16"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="-5" y="-25"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                            toggleDungeonStatus_OnClick()
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+            <Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+                <NormalTexture file="Interface\addons\LFT\images\objective_close"/>
+                <PushedTexture file="Interface\addons\LFT\images\objective_close_pushed"/>
+                <Size>
+                    <AbsDimension x="16" y="16"/>
+                </Size>
+                <Anchors>
+                    <Anchor point="TOPRIGHT">
+                        <Offset>
+                            <AbsDimension x="10" y="-25"/>
+                        </Offset>
+                    </Anchor>
+                </Anchors>
+            </Button>
+
+        </Frames>
+        <Scripts>
+            <OnLoad>
+                    this:RegisterForDrag("LeftButton");
+                    this:SetMovable(1);
+                    this:SetUserPlaced(true);
+                    tinsert(UISpecialFrames, this:GetName());
+            </OnLoad>
+            <OnDragStart>
+                    this:StartMoving();
+                    this.isMoving = true;
+            </OnDragStart>
+            <OnDragStop>
+                    this:StopMovingOrSizing();
+                    this.isMoving = false;
+            </OnDragStop>
+            <OnShow>
+                PlaySound("igCharacterInfoOpen");
+            </OnShow>
+            <OnHide>
+                    PlaySound("igCharacterInfoClose");
+            </OnHide>
+        </Scripts>
+    </Frame>
+
     <Frame name="LFTGroupStatus" hidden="false" parent="UIParent" enableMouse="true">
         <Size>
             <AbsDimension x="200" y="200"/>
@@ -573,12 +1104,24 @@
                 </FontString>
                 <FontString name="$parentTimeInQueue" inherits="GameFontWhite" text="Time in queue 123" justifyH="LEFT">
                     <Size>
-                        <AbsDimension x="200" y="22"/>
+                        <AbsDimension x="170" y="22"/>
                     </Size>
                     <Anchors>
                         <Anchor point="BOTTOMLEFT">
                             <Offset>
-                                <AbsDimension x="15" y="10"/>
+                                <AbsDimension x="15" y="21"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentAverageWaitTime" inherits="GameFontWhite" text="Average Wait Time: Unavailable" justifyH="LEFT">
+                    <Size>
+                        <AbsDimension x="170" y="22"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="BOTTOMLEFT">
+                            <Offset>
+                                <AbsDimension x="15" y="8"/>
                             </Offset>
                         </Anchor>
                     </Anchors>
@@ -654,7 +1197,6 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
-
                 <FontString name="LFTTitleTime" inherits="GameFontNormal" text="---TIME---" hidden="false">
                     <Anchors>
                         <Anchor point="TOP">
@@ -664,7 +1206,6 @@
                         </Anchor>
                     </Anchors>
                 </FontString>
-
 
                 <Texture name="LFTTankBackground2" file="Interface\Addons\LFT\images\tank2">
                     <Size>
@@ -679,31 +1220,6 @@
                     </Anchors>
                 </Texture>
 
-                <!--                <Texture name="LFTTankBackground" file="Interface\Addons\LFT\images\tank">-->
-                <!--                    <Size>-->
-                <!--                        <AbsDimension x="296" y="148"/>-->
-                <!--                    </Size>-->
-                <!--                    <Anchors>-->
-                <!--                        <Anchor point="LEFT" relativeTo="LFTTankBackground2"  relativePoint="LEFT">-->
-                <!--                            <Offset>-->
-                <!--                                <AbsDimension x="-12" y="-30"/>-->
-                <!--                            </Offset>-->
-                <!--                        </Anchor>-->
-                <!--                    </Anchors>-->
-                <!--                </Texture>-->
-
-                <!--                <Texture name="LFTHealerBackground" file="Interface\Addons\LFT\images\healer">-->
-                <!--                    <Size>-->
-                <!--                        <AbsDimension x="384" y="192"/>-->
-                <!--                    </Size>-->
-                <!--                    <Anchors>-->
-                <!--                        <Anchor point="TOP">-->
-                <!--                            <Offset>-->
-                <!--                                <AbsDimension x="134" y="-65"/>-->
-                <!--                            </Offset>-->
-                <!--                        </Anchor>-->
-                <!--                    </Anchors>-->
-                <!--                </Texture>-->
                 <Texture name="LFTHealerBackground2" file="Interface\Addons\LFT\images\healer2">
                     <Size>
                         <AbsDimension x="64" y="64"/>
@@ -717,18 +1233,6 @@
                     </Anchors>
                 </Texture>
 
-                <!--                <Texture name="LFTDamageBackground" file="Interface\Addons\LFT\images\damage">-->
-                <!--                    <Size>-->
-                <!--                        <AbsDimension x="384" y="192"/>-->
-                <!--                    </Size>-->
-                <!--                    <Anchors>-->
-                <!--                        <Anchor point="TOP">-->
-                <!--                            <Offset>-->
-                <!--                                <AbsDimension x="234" y="-65"/>-->
-                <!--                            </Offset>-->
-                <!--                        </Anchor>-->
-                <!--                    </Anchors>-->
-                <!--                </Texture>-->
                 <Texture name="LFTDamageBackground2" file="Interface\Addons\LFT\images\damage2">
                     <Size>
                         <AbsDimension x="64" y="64"/>
@@ -819,7 +1323,6 @@
                             this:StopMovingOrSizing()
                     </OnDragStop>
                     <OnEnter>
---                            LFT_ShowTooltip(this)
                             LFT_ShowMinimap()
                     </OnEnter>
                     <OnLeave>
